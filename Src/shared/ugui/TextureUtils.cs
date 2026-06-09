@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.shared.ugui.styles
+namespace com.github.lhervier.ksp.shared.ugui
 {
-    internal sealed class SteamInputTextures
+    internal sealed class TextureUtils
     {
         public static Texture2D MakeBorderTexture(Color fill, Color border, int thickness)
         {

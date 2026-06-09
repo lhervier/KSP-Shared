@@ -18,7 +18,7 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
 
                 var thickness = (int) PopupPalette.WindowBorderThickness;
                 var size = 2 * thickness + 1;
-                var tex = SteamInputTextures.MakeBorderTexture(
+                var tex = TextureUtils.MakeBorderTexture(
                     PopupPalette.WindowBodyColor,
                     PopupPalette.WindowBorderColor,
                     thickness

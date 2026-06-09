@@ -1,5 +1,4 @@
 using UnityEngine;
-using com.github.lhervier.ksp.shared.ugui.styles;
 
 namespace com.github.lhervier.ksp.shared.ugui.sprites
 {
@@ -30,7 +29,7 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         public static Sprite MakeChipSprite(Color fill, Color border, int thickness)
         {
             int size = 2 * thickness + 1;
-            var tex = SteamInputTextures.MakeBorderTexture(fill, border, thickness);
+            var tex = TextureUtils.MakeBorderTexture(fill, border, thickness);
             var sprite = Sprite.Create(
                 tex,
                 new Rect(0f, 0f, size, size),
