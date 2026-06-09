@@ -7,8 +7,8 @@ using com.github.lhervier.ksp.shared.ugui.button;
 namespace com.github.lhervier.ksp.shared.ugui.popup
 {
     public class PopupBuilder<T, C> : IUGUIBuilder<PopupController> 
-        where T : PopupTitleBarController
-        where C : PopupContentController
+        where T : MonoBehaviour
+        where C : MonoBehaviour
     {
         private string _popupID = "Popup";
         private IUGUIBuilder<T> _titleBarBuilder;
