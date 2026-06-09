@@ -17,6 +17,10 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         private bool _hasPosition = false;
         private Vector2 _initialPosition;
+
+        private bool _hasSize = false;
+        private Vector2 _size;
+
         private Sprite _icon = null;
         private string _label = string.Empty;
         
@@ -67,6 +71,19 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
+        public PopupBuilder<T, C> Size(Vector2 size)
+        {
+            this._size = size;
+            this._hasSize = true;
+            return this;
+        }
+
+        public PopupBuilder<T, C> DeleteSize()
+        {
+            this._hasSize = false;
+            return this;
+        }
+
         // =============================================
         // Builder
         // =============================================
@@ -78,11 +95,35 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         public PopupController Build()
         {
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
+            float positionX;
+            float positionY;
+            if( _hasPosition )
+            {
+                positionX = _initialPosition.x;
+                positionY = _initialPosition.y;
+            }
+            else
+            {
+                positionX = PopupPalette.WindowInitialPositionX;
+                positionY = PopupPalette.WindowInitialPositionY;
+            }
+            float width;
+            float height;
+            if( _hasSize )
+            {
+                width = _size.x;
+                height = _size.y;
+            }
+            else
+            {
+                width = PopupPalette.WindowWidth;
+                height = PopupPalette.WindowHeight;
+            }
             var pos = NormalizedWindowPos(
-                PopupPalette.WindowInitialPositionX, 
-                PopupPalette.WindowInitialPositionY, 
-                PopupPalette.WindowWidth,
-                PopupPalette.WindowHeight
+                positionX, 
+                positionY, 
+                width,
+                height
             );
             var content = new DialogGUIVerticalLayout();
             MultiOptionDialog multiOptionDialog = new MultiOptionDialog(
