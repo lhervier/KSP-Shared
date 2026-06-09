@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
 
@@ -8,11 +7,36 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 {
     public class ButtonBuilder : IUGUIBuilder<ButtonController>
     {
+        private float _size = DefaultPalette.ButtonSize;
+        private int _fontSize = DefaultPalette.ButtonFontSize;
+        
         private string _objectName = "Button";
-        private string _buttonLabel = string.Empty;
+        private string _label = string.Empty;
         private bool _interactable = true;
+
         private Color _backgroundColor = DefaultPalette.ButtonColor;
         private Color _hoverColor = DefaultPalette.ButtonHoverColor;
+        private Color _textColor = DefaultPalette.ButtonTextColor;
+        
+        // Auto width mode (text-button) : width follow the content via ContentSizeFitter, and
+        // _size became the height. _paddingH is padding left and right horizontaly.
+        private bool _autoWidth = false;
+        private float _paddingH = 0f;
+
+        // ===========================================================
+        // Builder parameters
+        // ===========================================================
+
+        /// <summary>Button size : square edges, or height in auto width mode.</summary>
+        public void SetSize(float size)
+        {
+            this._size = size;
+        }
+
+        public void SetFontSize(int fontSize)
+        {
+            this._fontSize = fontSize;
+        }
 
         public void SetObjectName(string objectName)
         {
@@ -21,7 +45,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
         public void SetLabel(string label)
         {
-            this._buttonLabel = label;
+            this._label = label;
         }
 
         public void SetInteractable(bool interactable)
@@ -39,16 +63,47 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             this._hoverColor = hoverColor;
         }
 
+        public void SetTextColor(Color textColor)
+        {
+            this._textColor = textColor;
+        }
+
+        public void SetAutoWidth(float paddingH)
+        {
+            this._autoWidth = true;
+            this._paddingH = paddingH;
+        }
+
+        public void DisableAutoWidth()
+        {
+            this._autoWidth = false;
+            this._paddingH = 0f;
+        }
+
+        // ===========================================================
+        // Build the button
+        // ===========================================================
+
         public ButtonController Build()
         {
             var buttonGo = new GameObject(_objectName, typeof(RectTransform));
             ButtonController controller = buttonGo.AddComponent<ButtonController>();
 
             var layoutElement = buttonGo.AddComponent<LayoutElement>();
-            layoutElement.preferredWidth = DefaultPalette.ButtonSize;
-            layoutElement.preferredHeight = DefaultPalette.ButtonSize;
-            layoutElement.minWidth = DefaultPalette.ButtonSize;
-            layoutElement.minHeight = DefaultPalette.ButtonSize;
+            if (_autoWidth)
+            {
+                // Largeur libre (pilotée par le contenu), hauteur fixée.
+                layoutElement.preferredHeight = _size;
+                layoutElement.minHeight = _size;
+            }
+            else
+            {
+                // Carré de côté _size.
+                layoutElement.preferredWidth = _size;
+                layoutElement.preferredHeight = _size;
+                layoutElement.minWidth = _size;
+                layoutElement.minHeight = _size;
+            }
 
             // White background fill so the Button's color tint applies as-is (no multiplication)
             var image = buttonGo.AddComponent<Image>();
@@ -78,7 +133,33 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             var canvasGroup = buttonGo.AddComponent<CanvasGroup>();
             controller.InitCanvasGroup(canvasGroup);
 
-            // Button label, centered in the button
+            Text label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
+            controller.InitLabel(label);
+
+            // Hover tint (label → white) only for fixed/square buttons, via PointerHandler rather than
+            // EventTrigger: PointerHandler does NOT implement IScrollHandler/IDragHandler, so the mouse
+            // wheel and drag bubble up to a parent ScrollRect instead of being swallowed by the button.
+            // Text buttons keep their configured color (no hover tint), matching their styled look.
+            if (!_autoWidth)
+            {
+                var hover = buttonGo.AddComponent<PointerHandler>();
+                hover.OnEnter = () => label.color = Color.white;
+                hover.OnExit = () => label.color = _textColor;
+            }
+
+            // Apply the initial interactable state via the controller (single source of truth)
+            controller.SetInteractable(_interactable);
+
+            return controller;
+        }
+
+        /// <summary>
+        /// Centered label that doesn't affect the button's width (square mode).
+        /// </summary>
+        /// <param name="buttonGo">The parent game object</param>
+        /// <returns></returns>
+        private Text BuildFixedLabel(GameObject buttonGo)
+        {
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(buttonGo.transform, false);
             var labelRect = labelGo.GetComponent<RectTransform>();
@@ -88,28 +169,46 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             labelRect.offsetMax = Vector2.zero;
 
             var label = labelGo.AddComponent<Text>();
-            label.text = _buttonLabel;
+            label.text = _label;
             label.font = HighLogic.UISkin.font;
-            label.fontSize = 13;
-            label.color = DefaultPalette.ButtonTextColor;
+            label.fontSize = _fontSize;
+            label.color = _textColor;
             label.alignment = TextAnchor.MiddleCenter;
             label.raycastTarget = false;
-            controller.InitLabel(label);
+            return label;
+        }
 
-            // EventTrigger swaps the label color to white on hover. When disabled, the CanvasGroup
-            // sets blocksRaycasts = false so these never fire — no need for an extra interactable check.
-            var trigger = buttonGo.AddComponent<EventTrigger>();
-            var enterEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
-            enterEntry.callback.AddListener(_ => label.color = Color.white);
-            trigger.triggers.Add(enterEntry);
-            var exitEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerExit };
-            exitEntry.callback.AddListener(_ => label.color = DefaultPalette.ButtonTextColor);
-            trigger.triggers.Add(exitEntry);
+        /// <summary>
+        /// Label thte drives the button width (auto width mode).
+        /// </summary>
+        /// <param name="buttonGo">The parent game object</param>
+        /// <returns></returns>
+        private Text BuildAutoWidthLabel(GameObject buttonGo)
+        {
+            var layout = buttonGo.AddComponent<HorizontalLayoutGroup>();
+            layout.padding = new RectOffset(Mathf.RoundToInt(_paddingH), Mathf.RoundToInt(_paddingH), 0, 0);
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
 
-            // Apply the initial interactable state via the controller (single source of truth)
-            controller.SetInteractable(_interactable);
+            var fitter = buttonGo.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
-            return controller;
+            var labelGo = new GameObject("Label", typeof(RectTransform));
+            labelGo.transform.SetParent(buttonGo.transform, false);
+            var label = labelGo.AddComponent<Text>();
+            label.text = _label;
+            label.font = HighLogic.UISkin.font;
+            label.fontSize = _fontSize;
+            label.color = _textColor;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            label.verticalOverflow = VerticalWrapMode.Overflow;
+            label.raycastTarget = false;
+            return label;
         }
     }
 }
