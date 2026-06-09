@@ -7,12 +7,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
     public class ButtonController : MonoBehaviour
     {
         private const float DisabledAlpha = 0.25f;
-
-        private Text _label;
-        private Button _button;
-        private CanvasGroup _canvasGroup;
-        private bool _interactable = true;
-
+        
         // Text color of the button when at rest.
         // This value is captured at initialization, and used when changing the interactable state.
         private Color _restingTextColor = ButtonPalette.ButtonTextColor;
@@ -23,24 +18,28 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         // Life cycle
         // =====================================================
 
+        private Text _label;
         public ButtonController Label(Text label)
         {
             this._label = label;
             return this;
         }
 
+        private Button _button;
         public ButtonController Button(Button button)
         {
             this._button = button;
             return this;
         }
 
+        private CanvasGroup _canvasGroup;
         public ButtonController CanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
             return this;
         }
 
+        private bool _interactable = true;
         public ButtonController Interactable(bool interactable)
         {
             this._interactable = interactable;

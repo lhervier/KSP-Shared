@@ -12,71 +12,68 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
     /// </summary>
     public class ScrollableViewBuilder<C> : IUGUIBuilder<ScrollableViewController> where C : MonoBehaviour
     {
-        private string _objectName = "ScrollableView";
-        private float _scrollbarWidth = ScrollableViewPalette.ScrollbarWidth;
-        private float _scrollSensitivity = ScrollableViewPalette.ScrollbarSensitivity;
-        private float _contentSpacing = 0f;
-        private RectOffset _contentPadding = new RectOffset(0, 0, 0, 0);
-
-        private Color _scrollbarBackgroundColor = ScrollableViewPalette.ScrollbarBackgroundColor;
-        private Color _handleColor = ScrollableViewPalette.ScrollbarHandleColor;
-        private Color _handleHoverColor = ScrollableViewPalette.ScrollbarHoverColor;
-
-        private IUGUIBuilder<C> _contentBuilder;
-
         // ===========================================================
         // Builder parameters
         // ===========================================================
 
         /// <summary>The builder producing the scrolled content. Its result is mounted in the viewport.</summary>
+        private IUGUIBuilder<C> _contentBuilder;
         public ScrollableViewBuilder<C> ContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
         }
 
+        private string _objectName = "ScrollableView";
         public ScrollableViewBuilder<C> ObjectName(string objectName)
         {
             this._objectName = objectName;
             return this;
         }
 
+        private float _scrollbarWidth = ScrollableViewPalette.ScrollbarWidth;
         public ScrollableViewBuilder<C> ScrollbarWidth(float width)
         {
             this._scrollbarWidth = width;
             return this;
         }
 
+        private float _scrollSensitivity = ScrollableViewPalette.ScrollbarSensitivity;
         public ScrollableViewBuilder<C> ScrollSensitivity(float sensitivity)
         {
             this._scrollSensitivity = sensitivity;
             return this;
         }
 
+        private float _contentSpacing = 0f;
         public ScrollableViewBuilder<C> ContentSpacing(float spacing)
         {
             this._contentSpacing = spacing;
             return this;
         }
 
+        private RectOffset _contentPadding = new RectOffset(0, 0, 0, 0);
         public ScrollableViewBuilder<C> ContentPadding(RectOffset padding)
         {
             this._contentPadding = padding;
             return this;
         }
 
+        private Color _scrollbarBackgroundColor = ScrollableViewPalette.ScrollbarBackgroundColor;
         public ScrollableViewBuilder<C> ScrollbarBackgroundColor(Color color)
         {
             this._scrollbarBackgroundColor = color;
             return this;
         }
 
+        private Color _handleColor = ScrollableViewPalette.ScrollbarHandleColor;
         public ScrollableViewBuilder<C> HandleColor(Color color)
         {
             this._handleColor = color;
             return this;
         }
 
+        private Color _handleHoverColor = ScrollableViewPalette.ScrollbarHoverColor;
         public ScrollableViewBuilder<C> HandleHoverColor(Color color)
         {
             this._handleHoverColor = color;

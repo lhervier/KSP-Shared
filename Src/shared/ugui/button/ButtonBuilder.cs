@@ -7,75 +7,69 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 {
     public class ButtonBuilder : IUGUIBuilder<ButtonController>
     {
-        private float _size = ButtonPalette.ButtonSize;
-        private int _fontSize = ButtonPalette.ButtonFontSize;
-        
-        private string _objectName = "Button";
-        private string _label = string.Empty;
-        private bool _interactable = true;
-
-        private Color _backgroundColor = ButtonPalette.ButtonColor;
-        private Color _hoverColor = ButtonPalette.ButtonHoverColor;
-        private Color _textColor = ButtonPalette.ButtonTextColor;
-        
-        // Auto width mode (text-button) : width follow the content via ContentSizeFitter, and
-        // _size became the height. _paddingH is padding left and right horizontaly.
-        private bool _autoWidth = false;
-        private float _paddingH = 0f;
-
         // ===========================================================
         // Builder parameters
         // ===========================================================
 
         /// <summary>Button size : square edges, or height in auto width mode.</summary>
+        private float _size = ButtonPalette.ButtonSize;
         public ButtonBuilder Size(float size)
         {
             this._size = size;
             return this;
         }
 
+        private int _fontSize = ButtonPalette.ButtonFontSize;
         public ButtonBuilder FontSize(int fontSize)
         {
             this._fontSize = fontSize;
             return this;
         }
 
+        private string _objectName = "Button";
         public ButtonBuilder ObjectName(string objectName)
         {
             this._objectName = objectName;
             return this;
         }
 
+        private string _label = string.Empty;
         public ButtonBuilder Label(string label)
         {
             this._label = label;
             return this;
         }
 
+        private bool _interactable = true;
         public ButtonBuilder Interactable(bool interactable)
         {
             this._interactable = interactable;
             return this;
         }
 
+        private Color _backgroundColor = ButtonPalette.ButtonColor;
         public ButtonBuilder BackgroundColor(Color backgroundColor)
         {
             this._backgroundColor = backgroundColor;
             return this;
         }
 
+        private Color _hoverColor = ButtonPalette.ButtonHoverColor;
         public ButtonBuilder HoverColor(Color hoverColor)
         {
             this._hoverColor = hoverColor;
             return this;
         }
 
+        private Color _textColor = ButtonPalette.ButtonTextColor;
         public ButtonBuilder TextColor(Color textColor)
         {
             this._textColor = textColor;
             return this;
         }
 
+        private bool _autoWidth = false;
+        private float _paddingH = 0f;
         public ButtonBuilder AutoWidth(float paddingH)
         {
             this._autoWidth = true;

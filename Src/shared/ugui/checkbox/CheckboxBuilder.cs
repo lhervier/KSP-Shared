@@ -7,21 +7,18 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
 {
     public class CheckboxBuilder : IUGUIBuilder<CheckboxController>
     {
-        private bool _isChecked = false;
-        private string _label = string.Empty;
-        private bool _greedy = false;
-
         // ==============================================
         // Build parameters
         // ==============================================
 
+        private bool _isChecked = false;
         public CheckboxBuilder Checked(bool isChecked)
         {
             this._isChecked = isChecked;
             return this;
         }
 
-        /// <summary>Optional label displayed next to the box. Empty => box only (zero-width label).</summary>
+        private string _label = string.Empty;
         public CheckboxBuilder Label(string label)
         {
             this._label = label ?? string.Empty;
@@ -33,6 +30,7 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
         /// When false (default), it hugs box+label and stays left-aligned, so clicks past the
         /// label do nothing — even if a parent layout stretches the row.
         /// </summary>
+        private bool _greedy = false;
         public CheckboxBuilder Greedy(bool greedy)
         {
             this._greedy = greedy;

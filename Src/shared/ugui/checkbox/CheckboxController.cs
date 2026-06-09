@@ -5,28 +5,27 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
 {
     public class CheckboxController : MonoBehaviour
     {
-        private GameObject _checkMark;
-        private PointerHandler _clickHandler;
-        private Text _label;
-
         public EventData<bool> OnToggled = new EventData<bool>("KSPShared.UGUI.Checkbox.OnToggled");
 
         // ============================================
         // Life cycle
         // ============================================
 
+        private PointerHandler _clickHandler;
         public CheckboxController ClickHandler(PointerHandler clickHandler)
         {
             this._clickHandler = clickHandler;
             return this;
         }
 
+        private GameObject _checkMark;
         public CheckboxController Checkmark(GameObject checkmark)
         {
             _checkMark = checkmark;
             return this;
         }
 
+        private Text _label;
         public CheckboxController Label(Text label)
         {
             _label = label;

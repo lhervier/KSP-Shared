@@ -6,11 +6,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 {
     public class PopupController : MonoBehaviour
     {
-        private CanvasGroup _canvasGroup;
-        private PopupDialog _popupDialog;
-        private ButtonController _closeButtonController;
-
-        private Vector2 _position;
         public EventData<Vector2> OnPositionCaptured = new EventData<Vector2>("PopupController.OnPositionCaptured");
         public EventVoid OnClosed = new EventVoid("PopupController.OnClosed");
 
@@ -21,6 +16,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         // Dependencies injected by the builder right after AddComponent, before Start() runs.
 
         /// <summary>Inject the KSP popup this controller drives.</summary>
+        private PopupDialog _popupDialog;
         public PopupController PopupDialog(PopupDialog popupDialog)
         {
             this._popupDialog = popupDialog;
@@ -28,18 +24,21 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         }
 
         /// <summary>Inject the popup's canvas group.</summary>
+        private CanvasGroup _canvasGroup;
         public PopupController CanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
             return this;
         }
 
-        public PopupController CloseButton(ButtonController closeButtonController)
+        private ButtonController _closeButtonController;
+        public PopupController CloseButtonController(ButtonController closeButtonController)
         {
             this._closeButtonController = closeButtonController;
             return this;
         }
 
+        private Vector2 _position;
         public PopupController Position(Vector2 pos)
         {
             this._position = pos;

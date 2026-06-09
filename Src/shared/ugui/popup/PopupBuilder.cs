@@ -10,57 +10,53 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         where T : MonoBehaviour
         where C : MonoBehaviour
     {
-        private string _popupID = "Popup";
-        private IUGUIBuilder<T> _titleBarBuilder;
-        private IUGUIBuilder<C> _contentBuilder;
-        private ButtonBuilder _buttonBuilder = new ButtonBuilder();
-
-        private Vector2 _initialPosition;
-        private Vector2 _size;
-
-        private Sprite _icon = null;
-        private string _label = string.Empty;
-        
         // ===============================================
         // Build parameters
         // ===============================================
 
+        private string _popupID = "Popup";
         public PopupBuilder<T, C> PopupID(string id)
         {
             this._popupID = id;
             return this;
         }
 
+        private string _title = string.Empty;
         public PopupBuilder<T, C> Title(string title)
         {
-            this._label = title;
+            this._title = title;
             return this;
         }
 
+        private Sprite _icon = null;
         public PopupBuilder<T, C> Icon(Sprite icon)
         {
             this._icon = icon;
             return this;
         }
 
+        private IUGUIBuilder<T> _titleBarBuilder;
         public PopupBuilder<T, C> TitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
         {
             this._titleBarBuilder = titleBarBuilder;
             return this;
         }
 
+        private IUGUIBuilder<C> _contentBuilder;
         public PopupBuilder<T, C> ContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
         }
 
+        private Vector2 _position;
         public PopupBuilder<T, C> Position(Vector2 position)
         {
-            this._initialPosition = position;
+            this._position = position;
             return this;
         }
 
+        private Vector2 _size;
         public PopupBuilder<T, C> Size(Vector2 size)
         {
             this._size = size;
@@ -80,10 +76,10 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
             float positionX;
             float positionY;
-            if( _initialPosition != null )
+            if( _position != null )
             {
-                positionX = _initialPosition.x;
-                positionY = _initialPosition.y;
+                positionX = _position.x;
+                positionY = _position.y;
             }
             else
             {
@@ -197,9 +193,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return popupDialog.popupWindow
                 .AddComponent<PopupController>()
                 .PopupDialog(popupDialog)
-                .Position(_initialPosition)
+                .Position(_position)
                 .CanvasGroup(canvasGroup)
-                .CloseButton(closeButtonController);
+                .CloseButtonController(closeButtonController);
         }
 
         // =================================================
@@ -369,7 +365,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             var labelGo = new GameObject("Popup.TitleBar.Label", typeof(RectTransform));
             
             var label = labelGo.AddComponent<Text>();
-            label.text = this._label.ToUpperInvariant();
+            label.text = this._title.ToUpperInvariant();
             label.font = HighLogic.UISkin.font;
             label.fontSize = 12;
             label.fontStyle = FontStyle.Bold;
@@ -402,7 +398,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             var actionGroupLabelController = this._titleBarBuilder.Build();
             actionGroupLabelController.transform.SetParent(rightRowGo.transform, false);
 
-            closeButtonController = _buttonBuilder
+            closeButtonController = new ButtonBuilder()
                 .ObjectName("Popup.TitleBar.RightColumn.CloseButton")
                 .Label("×")
                 .Interactable(true)
