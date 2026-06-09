@@ -20,41 +20,56 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         private Sprite _icon = null;
         private string _label = string.Empty;
         
-        public void SetPopupID(string id)
+        // ===============================================
+        // Build parameters
+        // ===============================================
+
+        public PopupBuilder<T, C> PopupID(string id)
         {
             this._popupID = id;
+            return this;
         }
 
-        public void SetTitle(string title)
+        public PopupBuilder<T, C> Title(string title)
         {
             this._label = title;
+            return this;
         }
 
-        public void SetIcon(Sprite icon)
+        public PopupBuilder<T, C> Icon(Sprite icon)
         {
             this._icon = icon;
+            return this;
         }
 
-        public void SetTitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
+        public PopupBuilder<T, C> TitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
         {
             this._titleBarBuilder = titleBarBuilder;
+            return this;
         }
 
-        public void SetContentBuilder(IUGUIBuilder<C> contentBuilder)
+        public PopupBuilder<T, C> ContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
+            return this;
         }
 
-        public void SetPosition(Vector2 position)
+        public PopupBuilder<T, C> Position(Vector2 position)
         {
             this._initialPosition = position;
             this._hasPosition = true;
+            return this;
         }
 
-        public void DeletePosition()
+        public PopupBuilder<T, C> DeletePosition()
         {
             this._hasPosition = false;
+            return this;
         }
+
+        // =============================================
+        // Builder
+        // =============================================
 
         /// <summary>
         /// Spawn the cheat-sheet popup window and return its controller, or null if KSP failed to spawn
