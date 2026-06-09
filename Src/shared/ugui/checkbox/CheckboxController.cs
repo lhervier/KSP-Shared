@@ -6,43 +6,64 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
     public class CheckboxController : MonoBehaviour
     {
         private GameObject _checkMark;
-        private Button _button;
+        private PointerHandler _clickHandler;
+        private Text _label;
 
         public EventData<bool> OnToggled = new EventData<bool>("KSPShared.UGUI.Checkbox.OnToggled");
 
-        public void BindButton(Button button)
+        // ============================================
+        // Life cycle
+        // ============================================
+
+        public CheckboxController ClickHandler(PointerHandler clickHandler)
         {
-            this._button = button;
+            this._clickHandler = clickHandler;
+            return this;
         }
 
-        public void BindCheckmark(GameObject checkmark)
+        public CheckboxController Checkmark(GameObject checkmark)
         {
             _checkMark = checkmark;
+            return this;
+        }
+
+        public CheckboxController Label(Text label)
+        {
+            _label = label;
+            return this;
         }
 
         public void Start()
         {
-            if( _button != null )
+            if( _clickHandler != null )
             {
-                _button.onClick.AddListener(OnButtonClicked);
+                _clickHandler.OnClick = OnClicked;
             }
         }
 
         public void OnDestroy()
         {
-            if( _button != null )
+            if( _clickHandler != null )
             {
-                _button.onClick.RemoveListener(OnButtonClicked);
+                _clickHandler.OnClick = null;
             }
         }
 
-        private void OnButtonClicked()
+        // ==========================================================
+        // Methods bounds to events
+        // ==========================================================
+
+        private void OnClicked()
         {
             // checkMark.activeSelf is the current (pre-click) visual state, so the new desired
             // state is its negation. The callee decides whether to apply it (e.g., by reading
             // the model's state, calling a toggle method, etc.).
             SetChecked(!_checkMark.activeSelf);
         }
+
+        // ==========================================================
+        // Public API
+        // ==========================================================
 
         public bool IsChecked()
         {
@@ -55,6 +76,18 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             if( _checkMark.activeSelf == isChecked ) return;
             _checkMark.SetActive(isChecked);
             OnToggled.Fire(isChecked);
+        }
+
+        public string GetLabel()
+        {
+            if( _label == null ) return string.Empty;
+            return _label.text;
+        }
+
+        public void SetLabel(string label)
+        {
+            if( _label == null ) return;
+            _label.text = label ?? string.Empty;
         }
     }
 }

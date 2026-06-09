@@ -31,5 +31,6 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
         // Checkbox
         public const float CheckboxSize = 12f;
         public const float CheckmarkInset = 2f;
+        public const int CheckboxFontSize = 12;
     }
 }
