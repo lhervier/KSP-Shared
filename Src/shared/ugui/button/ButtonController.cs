@@ -11,6 +11,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         private Text _label;
         private Button _button;
         private CanvasGroup _canvasGroup;
+        private bool _interactable = true;
 
         // Text color of the button when at rest.
         // This value is captured at initialization, and used when changing the interactable state.
@@ -22,20 +23,54 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         // Life cycle
         // =====================================================
 
-        public void InitLabel(Text label)
+        public ButtonController Label(Text label)
         {
             this._label = label;
-            if (label != null) this._restingTextColor = label.color;
+            return this;
         }
 
-        public void InitButton(Button button)
+        public ButtonController Button(Button button)
         {
             this._button = button;
+            return this;
         }
 
-        public void InitCanvasGroup(CanvasGroup canvasGroup)
+        public ButtonController CanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
+            return this;
+        }
+
+        public ButtonController Interactable(bool interactable)
+        {
+            this._interactable = interactable;
+            return this;
+        }
+
+        public void Start()
+        {
+            if( this._button != null )
+            {
+                _button.onClick.AddListener(_OnClick);
+            }
+            this.SetInteractable(_interactable);
+            if (_label != null) 
+            {
+                this._restingTextColor = _label.color;
+            }
+        }
+
+        public void OnDestroy()
+        {
+            if( this._button != null )
+            {
+                _button.onClick.RemoveListener(_OnClick);
+            }
+        }
+
+        private void _OnClick()
+        {
+            OnClick.Fire();
         }
 
         // ============================================
@@ -44,7 +79,8 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
         public void SetLabel(string text)
         {
-            if (_label != null) _label.text = text;
+            if (_label == null) return;
+            _label.text = text;
         }
 
         public bool IsInteractable()

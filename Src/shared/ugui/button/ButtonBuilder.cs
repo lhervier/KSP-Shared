@@ -97,8 +97,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         public ButtonController Build()
         {
             var buttonGo = new GameObject(_objectName, typeof(RectTransform));
-            ButtonController controller = buttonGo.AddComponent<ButtonController>();
-
+            
             var layoutElement = buttonGo.AddComponent<LayoutElement>();
             if (_autoWidth)
             {
@@ -135,17 +134,12 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             colors.colorMultiplier = 1f;
             colors.fadeDuration = 0.1f;
             button.colors = colors;
-            button.onClick.AddListener(() => controller.OnClick.Fire());
-            controller.InitButton(button);
-
+            
             // CanvasGroup applies a global alpha to the button (background + text + future children),
             // and also blocks raycasts when disabled — matches the mockup's .ka:disabled { opacity: .25 }.
             var canvasGroup = buttonGo.AddComponent<CanvasGroup>();
-            controller.InitCanvasGroup(canvasGroup);
-
             Text label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
-            controller.InitLabel(label);
-
+            
             // Hover tint (label → white) only for fixed/square buttons, via PointerHandler rather than
             // EventTrigger: PointerHandler does NOT implement IScrollHandler/IDragHandler, so the mouse
             // wheel and drag bubble up to a parent ScrollRect instead of being swallowed by the button.
@@ -158,9 +152,12 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             }
 
             // Apply the initial interactable state via the controller (single source of truth)
-            controller.SetInteractable(_interactable);
-
-            return controller;
+            return buttonGo
+                .AddComponent<ButtonController>()
+                .Button(button)
+                .CanvasGroup(canvasGroup)
+                .Label(label)
+                .Interactable(_interactable);
         }
 
         /// <summary>
