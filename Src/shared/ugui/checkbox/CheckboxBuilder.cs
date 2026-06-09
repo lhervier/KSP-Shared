@@ -9,10 +9,19 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
     {
         private bool _isChecked = false;
 
-        public void SetChecked(bool isChecked)
+        // ==============================================
+        // Build parameters
+        // ==============================================
+
+        public CheckboxBuilder Checked(bool isChecked)
         {
             this._isChecked = isChecked;
+            return this;
         }
+
+        // ================================================
+        // Builder
+        // ================================================
 
         public CheckboxController Build()
         {
