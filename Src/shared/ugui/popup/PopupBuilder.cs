@@ -251,7 +251,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         public GameObject CreateTitleBarRoot(PopupController controller)
         {
-            var rootGo = new GameObject("SteamInput.TitleBar.Root", typeof(RectTransform));
+            var rootGo = new GameObject("Popup.TitleBar.Root", typeof(RectTransform));
             
             // Full size of the parent = the title bar, minus the bottom separator
             var rootRect = rootGo.GetComponent<RectTransform>();
@@ -321,7 +321,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         public GameObject CreateTitleBarIcon()
         {
-            var iconGo = new GameObject("SteamInput.TitleBar.LeftColumn.Icon", typeof(RectTransform));
+            var iconGo = new GameObject("Popup.TitleBar.Icon", typeof(RectTransform));
             
             // The icon itself
             var iconImage = iconGo.AddComponent<Image>();
@@ -345,7 +345,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         public GameObject CreateTitleBarLabel()
         {
-            var labelGo = new GameObject("SteamInput.TitleBar.LeftColumn.Label", typeof(RectTransform));
+            var labelGo = new GameObject("Popup.TitleBar.Label", typeof(RectTransform));
             
             var label = labelGo.AddComponent<Text>();
             label.text = this._label.ToUpperInvariant();
@@ -367,7 +367,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         public GameObject CreateTitleBarRightColumn(PopupController controller)
         {
-            var rightRowGo = new GameObject("SteamInput.TitleBar.RightColumn", typeof(RectTransform));
+            var rightRowGo = new GameObject("Popup.TitleBar.RightColumn", typeof(RectTransform));
             
             // Horizontal layout containing the right-side placeholders, sized to their text content
             var rightRowLayout = rightRowGo.AddComponent<HorizontalLayoutGroup>();
