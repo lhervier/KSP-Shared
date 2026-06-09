@@ -174,9 +174,21 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 image.color = PopupPalette.PopupBodyColor;
             }
 
-            // Add the body (scrollable content). First in z-order so the overlay/menu draw above it.
-            MonoBehaviour bodyController = this._contentBuilder.Build();
-            bodyController.transform.SetParent(popupDialog.popupWindow.transform, false);
+            // Content host: frames the region where the content lives — the window interior minus the
+            // chrome border and the title bar — and escapes KSP's VerticalLayoutGroup. Added first in
+            // z-order so the title bar (and any overlay/menu) draws above it. Content builders only fill
+            // this host; they no longer reason about the chrome or the title bar.
+            GameObject contentHostGo = this.CreateContentHost();
+            contentHostGo.transform.SetParent(popupDialog.popupWindow.transform, false);
+
+            // Build the content and stretch it to fill the host.
+            MonoBehaviour contentController = this._contentBuilder.Build();
+            var contentRect = contentController.GetComponent<RectTransform>();
+            contentRect.SetParent(contentHostGo.transform, false);
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.offsetMin = Vector2.zero;
+            contentRect.offsetMax = Vector2.zero;
 
             // Add the title bar
             GameObject titleBarGo = this.CreateTitleBar(out ButtonController closeButtonController);
@@ -188,6 +200,35 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 .Position(_initialPosition)
                 .CanvasGroup(canvasGroup)
                 .CloseButton(closeButtonController);
+        }
+
+        // =================================================
+        // Content host
+        // =================================================
+
+        /// <summary>
+        /// Frame the region where the popup content lives: the window interior minus the chrome border
+        /// on every side and the title bar at the top. The content is then stretched to fill it.
+        /// </summary>
+        private GameObject CreateContentHost()
+        {
+            var hostGo = new GameObject("Popup.ContentHost", typeof(RectTransform));
+
+            // Escape the popupWindow's VerticalLayoutGroup so we position ourselves by anchors.
+            var layoutElement = hostGo.AddComponent<LayoutElement>();
+            layoutElement.ignoreLayout = true;
+
+            // Fills the window interior minus chrome (1px on left/right/bottom) and the title bar at the top
+            var rect = hostGo.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(PopupPalette.PopupBorderThickness, PopupPalette.PopupBorderThickness);
+            rect.offsetMax = new Vector2(
+                -PopupPalette.PopupBorderThickness,
+                -(PopupPalette.PopupBorderThickness + PopupPalette.TitleBarHeight)
+            );
+
+            return hostGo;
         }
 
         // =================================================
