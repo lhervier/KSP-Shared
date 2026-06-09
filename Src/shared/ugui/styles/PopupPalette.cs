@@ -16,14 +16,6 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
         public static readonly Color PopupBorderColor = new Color(85f / 255f, 85f / 255f, 85f / 255f);
         
         // ===============================================================
-        // Main content
-        // ===============================================================
-
-        public const float PopupScrollbarWidth = 8f;
-        public const float PopupPlaceholderHeight = 800f;
-        public static readonly Color PopupScrollbarColor = new Color(136f / 255f, 136f / 255f, 136f / 255f);
-
-        // ===============================================================
         // Title bar
         // ===============================================================
         public const float TitleBarHeight = 28f;
