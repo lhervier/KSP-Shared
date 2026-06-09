@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace com.github.lhervier.ksp.shared.ugui
 {
-    public interface IUGUIBuilder<T> where T : MonoBehaviour
+    public interface IUGUIBuilder<C> where C : MonoBehaviour
     {
-        T Build();
+        C Build();
     }
 }
