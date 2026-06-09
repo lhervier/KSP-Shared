@@ -28,56 +28,66 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         // ===========================================================
 
         /// <summary>Button size : square edges, or height in auto width mode.</summary>
-        public void SetSize(float size)
+        public ButtonBuilder Size(float size)
         {
             this._size = size;
+            return this;
         }
 
-        public void SetFontSize(int fontSize)
+        public ButtonBuilder FontSize(int fontSize)
         {
             this._fontSize = fontSize;
+            return this;
         }
 
-        public void SetObjectName(string objectName)
+        public ButtonBuilder ObjectName(string objectName)
         {
             this._objectName = objectName;
+            return this;
         }
 
-        public void SetLabel(string label)
+        public ButtonBuilder Label(string label)
         {
             this._label = label;
+            return this;
         }
 
-        public void SetInteractable(bool interactable)
+        public ButtonBuilder Interactable(bool interactable)
         {
             this._interactable = interactable;
+            return this;
         }
 
-        public void SetBackgroundColor(Color backgroundColor)
+        public ButtonBuilder BackgroundColor(Color backgroundColor)
         {
             this._backgroundColor = backgroundColor;
+            return this;
         }
 
-        public void SetHoverColor(Color hoverColor)
+        public ButtonBuilder HoverColor(Color hoverColor)
         {
             this._hoverColor = hoverColor;
+            return this;
         }
 
-        public void SetTextColor(Color textColor)
+        public ButtonBuilder TextColor(Color textColor)
         {
             this._textColor = textColor;
+            return this;
         }
 
-        public void SetAutoWidth(float paddingH)
+        public ButtonBuilder AutoWidth(float paddingH)
         {
             this._autoWidth = true;
             this._paddingH = paddingH;
+            return this;
         }
 
-        public void DisableAutoWidth()
+        public ButtonBuilder DisableAutoWidth()
         {
             this._autoWidth = false;
             this._paddingH = 0f;
+            return this;
         }
 
         // ===========================================================
