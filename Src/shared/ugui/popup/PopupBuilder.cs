@@ -15,10 +15,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         private IUGUIBuilder<C> _contentBuilder;
         private ButtonBuilder _buttonBuilder = new ButtonBuilder();
 
-        private bool _hasPosition = false;
         private Vector2 _initialPosition;
-
-        private bool _hasSize = false;
         private Vector2 _size;
 
         private Sprite _icon = null;
@@ -61,26 +58,12 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         public PopupBuilder<T, C> Position(Vector2 position)
         {
             this._initialPosition = position;
-            this._hasPosition = true;
-            return this;
-        }
-
-        public PopupBuilder<T, C> DeletePosition()
-        {
-            this._hasPosition = false;
             return this;
         }
 
         public PopupBuilder<T, C> Size(Vector2 size)
         {
             this._size = size;
-            this._hasSize = true;
-            return this;
-        }
-
-        public PopupBuilder<T, C> DeleteSize()
-        {
-            this._hasSize = false;
             return this;
         }
 
@@ -97,7 +80,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
             float positionX;
             float positionY;
-            if( _hasPosition )
+            if( _initialPosition != null )
             {
                 positionX = _initialPosition.x;
                 positionY = _initialPosition.y;
@@ -109,7 +92,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             }
             float width;
             float height;
-            if( _hasSize )
+            if( _size != null )
             {
                 width = _size.x;
                 height = _size.y;
@@ -151,13 +134,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 return null;
             }
             
-            PopupController controller = popupDialog.popupWindow.AddComponent<PopupController>();
-            controller.BindPopupDialog(popupDialog);
-            if (_hasPosition)
-            {
-                controller.InitializePosition(_initialPosition);
-            }
-
             // Remove KSP default title
             var title = popupDialog.popupWindow.transform.Find("Title");
             title?.gameObject.SetActive(false);
@@ -170,7 +146,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             if (canvasGroup != null)
             {
                 canvasGroup.alpha = 0f;
-                controller.BindCanvasGroup(canvasGroup);
             }
 
             // Set windows border color 
@@ -204,17 +179,22 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             bodyController.transform.SetParent(popupDialog.popupWindow.transform, false);
 
             // Add the title bar
-            GameObject titleBarGo = this.CreateTitleBar(controller);
+            GameObject titleBarGo = this.CreateTitleBar(out ButtonController closeButtonController);
             titleBarGo.transform.SetParent(popupDialog.popupWindow.transform, false);
-
-            return controller;
+            
+            return popupDialog.popupWindow
+                .AddComponent<PopupController>()
+                .PopupDialog(popupDialog)
+                .Position(_initialPosition)
+                .CanvasGroup(canvasGroup)
+                .CloseButton(closeButtonController);
         }
 
         // =================================================
         // Popup Title Bar
         // =================================================
 
-        private GameObject CreateTitleBar(PopupController controller)
+        private GameObject CreateTitleBar(out ButtonController closeButtonController)
         {
             var titleBarGo = new GameObject("Popup.TitleBar", typeof(RectTransform));
             
@@ -239,7 +219,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             headerImage.raycastTarget = false;
 
             // The main part of the title with all the elements
-            var rootGo = this.CreateTitleBarRoot(controller);
+            var rootGo = this.CreateTitleBarRoot(out closeButtonController);
             rootGo.transform.SetParent(titleBarGo.transform, false);
 
             // The separator
@@ -249,7 +229,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return titleBarGo;
         }
 
-        public GameObject CreateTitleBarRoot(PopupController controller)
+        public GameObject CreateTitleBarRoot(out ButtonController closeButtonController)
         {
             var rootGo = new GameObject("Popup.TitleBar.Root", typeof(RectTransform));
             
@@ -280,7 +260,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             var leftRow = this.CreateTitleBarLeftColumn();
             leftRow.transform.SetParent(rootGo.transform, false);
 
-            var rightRow = this.CreateTitleBarRightColumn(controller);
+            var rightRow = this.CreateTitleBarRightColumn(out closeButtonController);
             rightRow.transform.SetParent(rootGo.transform, false);
 
             return rootGo;
@@ -365,7 +345,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         // Popup title bar right column
         // ===============================================
 
-        public GameObject CreateTitleBarRightColumn(PopupController controller)
+        public GameObject CreateTitleBarRightColumn(out ButtonController closeButtonController)
         {
             var rightRowGo = new GameObject("Popup.TitleBar.RightColumn", typeof(RectTransform));
             
@@ -381,7 +361,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             var actionGroupLabelController = this._titleBarBuilder.Build();
             actionGroupLabelController.transform.SetParent(rightRowGo.transform, false);
 
-            var closeButtonController = _buttonBuilder
+            closeButtonController = _buttonBuilder
                 .ObjectName("Popup.TitleBar.RightColumn.CloseButton")
                 .Label("×")
                 .Interactable(true)
@@ -389,8 +369,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 .HoverColor(PopupPalette.TitleBarButtonHoverColor)
                 .Build();
             closeButtonController.transform.SetParent(rightRowGo.transform, false);
-            controller.BindCloseButton(closeButtonController);
-
+            
             return rightRowGo;
         }
 

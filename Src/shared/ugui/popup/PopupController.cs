@@ -10,7 +10,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         private PopupDialog _popupDialog;
         private ButtonController _closeButtonController;
 
-        private bool _hasPosition = false;
         private Vector2 _position;
         public EventData<Vector2> OnPositionCaptured = new EventData<Vector2>("PopupController.OnPositionCaptured");
         public EventVoid OnClosed = new EventVoid("PopupController.OnClosed");
@@ -22,26 +21,29 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         // Dependencies injected by the builder right after AddComponent, before Start() runs.
 
         /// <summary>Inject the KSP popup this controller drives.</summary>
-        public void BindPopupDialog(PopupDialog popupDialog)
+        public PopupController PopupDialog(PopupDialog popupDialog)
         {
             this._popupDialog = popupDialog;
+            return this;
         }
 
         /// <summary>Inject the popup's canvas group.</summary>
-        public void BindCanvasGroup(CanvasGroup canvasGroup)
+        public PopupController CanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
+            return this;
         }
 
-        public void BindCloseButton(ButtonController closeButtonController)
+        public PopupController CloseButton(ButtonController closeButtonController)
         {
             this._closeButtonController = closeButtonController;
+            return this;
         }
 
-        public void InitializePosition(Vector2 pos)
+        public PopupController Position(Vector2 pos)
         {
             this._position = pos;
-            this._hasPosition = true;
+            return this;
         }
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             // Wait one frame so KSP's layout pass (which re-applies the spawn position) has settled.
             yield return null;
-            if( _hasPosition )
+            if( _position != null )
             {
                 SetPosition(_position);
             }
@@ -194,7 +196,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             if (_popupDialog != null && _popupDialog.RTrf != null)
             {
                 _position = _popupDialog.RTrf.localPosition;
-                _hasPosition = true;
                 OnPositionCaptured.Fire(_position);
             }
         }
