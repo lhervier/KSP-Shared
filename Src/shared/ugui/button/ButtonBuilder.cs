@@ -7,16 +7,16 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 {
     public class ButtonBuilder : IUGUIBuilder<ButtonController>
     {
-        private float _size = DefaultPalette.ButtonSize;
-        private int _fontSize = DefaultPalette.ButtonFontSize;
+        private float _size = ButtonPalette.ButtonSize;
+        private int _fontSize = ButtonPalette.ButtonFontSize;
         
         private string _objectName = "Button";
         private string _label = string.Empty;
         private bool _interactable = true;
 
-        private Color _backgroundColor = DefaultPalette.ButtonColor;
-        private Color _hoverColor = DefaultPalette.ButtonHoverColor;
-        private Color _textColor = DefaultPalette.ButtonTextColor;
+        private Color _backgroundColor = ButtonPalette.ButtonColor;
+        private Color _hoverColor = ButtonPalette.ButtonHoverColor;
+        private Color _textColor = ButtonPalette.ButtonTextColor;
         
         // Auto width mode (text-button) : width follow the content via ContentSizeFitter, and
         // _size became the height. _paddingH is padding left and right horizontaly.

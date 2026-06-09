@@ -15,7 +15,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
         // Text color of the button when at rest.
         // This value is captured at initialization, and used when changing the interactable state.
-        private Color _restingTextColor = DefaultPalette.ButtonTextColor;
+        private Color _restingTextColor = ButtonPalette.ButtonTextColor;
         
         public EventVoid OnClick = new EventVoid("KSPShared.UGUI.Button.OnClick");
 

@@ -87,8 +87,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             }
             else
             {
-                positionX = PopupPalette.WindowInitialPositionX;
-                positionY = PopupPalette.WindowInitialPositionY;
+                positionX = PopupPalette.PopupDefaultPositionX;
+                positionY = PopupPalette.PopupDefaultPositionY;
             }
             float width;
             float height;
@@ -99,8 +99,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             }
             else
             {
-                width = PopupPalette.WindowWidth;
-                height = PopupPalette.WindowHeight;
+                width = PopupPalette.PopupDefaultWidth;
+                height = PopupPalette.PopupDefaultHeight;
             }
             var pos = NormalizedWindowPos(
                 positionX, 
@@ -171,7 +171,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
                 image.sprite = SpritesGlobal.FillSprite;
                 image.type = Image.Type.Simple;
-                image.color = PopupPalette.WindowBodyColor;
+                image.color = PopupPalette.PopupBodyColor;
             }
 
             // Add the body (scrollable content). First in z-order so the overlay/menu draw above it.
@@ -208,8 +208,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             titleBarRect.anchorMin = new Vector2(0f, 1f);
             titleBarRect.anchorMax = new Vector2(1f, 1f);
             titleBarRect.pivot = new Vector2(0.5f, 1f);
-            titleBarRect.sizeDelta = new Vector2(-2f * PopupPalette.WindowBorderThickness, PopupPalette.TitleBarHeight);
-            titleBarRect.anchoredPosition = new Vector2(0f, -PopupPalette.WindowBorderThickness);
+            titleBarRect.sizeDelta = new Vector2(-2f * PopupPalette.PopupBorderThickness, PopupPalette.TitleBarHeight);
+            titleBarRect.anchoredPosition = new Vector2(0f, -PopupPalette.PopupBorderThickness);
 
             // Image for the backgroup of the title bar
             var headerImage = titleBarGo.AddComponent<Image>();

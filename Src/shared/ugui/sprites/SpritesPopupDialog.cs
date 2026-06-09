@@ -16,11 +16,11 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
                     return _windowChromeSprite;
                 }
 
-                var thickness = (int) PopupPalette.WindowBorderThickness;
+                var thickness = (int) PopupPalette.PopupBorderThickness;
                 var size = 2 * thickness + 1;
                 var tex = TextureUtils.MakeBorderTexture(
-                    PopupPalette.WindowBodyColor,
-                    PopupPalette.WindowBorderColor,
+                    PopupPalette.PopupBodyColor,
+                    PopupPalette.PopupBorderColor,
                     thickness
                 );
                 _windowChromeSprite = Sprite.Create(

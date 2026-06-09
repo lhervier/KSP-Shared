@@ -93,10 +93,10 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             boxGo.transform.SetParent(clickableGo.transform, false);
 
             var boxLayoutElement = boxGo.AddComponent<LayoutElement>();
-            boxLayoutElement.preferredWidth = DefaultPalette.CheckboxSize;
-            boxLayoutElement.preferredHeight = DefaultPalette.CheckboxSize;
-            boxLayoutElement.minWidth = DefaultPalette.CheckboxSize;
-            boxLayoutElement.minHeight = DefaultPalette.CheckboxSize;
+            boxLayoutElement.preferredWidth = CheckboxPalette.CheckboxSize;
+            boxLayoutElement.preferredHeight = CheckboxPalette.CheckboxSize;
+            boxLayoutElement.minWidth = CheckboxPalette.CheckboxSize;
+            boxLayoutElement.minHeight = CheckboxPalette.CheckboxSize;
 
             var bgImage = boxGo.AddComponent<Image>();
             bgImage.sprite = SpritesGlobal.FillSprite;
@@ -111,8 +111,8 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             var checkmarkRect = checkmarkGo.GetComponent<RectTransform>();
             checkmarkRect.anchorMin = Vector2.zero;
             checkmarkRect.anchorMax = Vector2.one;
-            checkmarkRect.offsetMin = new Vector2(DefaultPalette.CheckmarkInset, DefaultPalette.CheckmarkInset);
-            checkmarkRect.offsetMax = new Vector2(-DefaultPalette.CheckmarkInset, -DefaultPalette.CheckmarkInset);
+            checkmarkRect.offsetMin = new Vector2(CheckboxPalette.CheckmarkInset, CheckboxPalette.CheckmarkInset);
+            checkmarkRect.offsetMax = new Vector2(-CheckboxPalette.CheckmarkInset, -CheckboxPalette.CheckmarkInset);
 
             var checkmarkImage = checkmarkGo.AddComponent<Image>();
             checkmarkImage.sprite = SpritesGlobal.FillSprite;
@@ -135,7 +135,7 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             var label = labelGo.AddComponent<Text>();
             label.text = _label;
             label.font = HighLogic.UISkin.font;
-            label.fontSize = DefaultPalette.CheckboxFontSize;
+            label.fontSize = CheckboxPalette.CheckboxFontSize;
             label.color = DefaultPalette.LabelColor;
             label.alignment = TextAnchor.MiddleLeft;
             label.horizontalOverflow = HorizontalWrapMode.Overflow;

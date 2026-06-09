@@ -4,23 +4,24 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
 {
     public static class PopupPalette
     {
-        public const float WindowInitialPositionX = 428f;
-        public const float WindowInitialPositionY = 20f;
-        public const float WindowWidth = 350f;
-        public const float WindowHeight = 400f;
-        public const float WindowBorderThickness = 1f;
+        public const float PopupDefaultPositionX = 428f;
+        public const float PopupDefaultPositionY = 20f;
+        public const float PopupDefaultWidth = 350f;
+        public const float PopupDefaultHeight = 400f;
+
+        public const float PopupBorderThickness = 1f;
         
         // Colors
-        public static readonly Color WindowBodyColor = new Color(20f / 255f, 20f / 255f, 20f / 255f);
-        public static readonly Color WindowBorderColor = new Color(85f / 255f, 85f / 255f, 85f / 255f);
+        public static readonly Color PopupBodyColor = new Color(20f / 255f, 20f / 255f, 20f / 255f);
+        public static readonly Color PopupBorderColor = new Color(85f / 255f, 85f / 255f, 85f / 255f);
         
         // ===============================================================
         // Main content
         // ===============================================================
 
-        public const float MainScrollbarWidth = 8f;
-        public const float MainPlaceholderHeight = 800f;
-        public static readonly Color MainScrollbarColor = new Color(136f / 255f, 136f / 255f, 136f / 255f);
+        public const float PopupScrollbarWidth = 8f;
+        public const float PopupPlaceholderHeight = 800f;
+        public static readonly Color PopupScrollbarColor = new Color(136f / 255f, 136f / 255f, 136f / 255f);
 
         // ===============================================================
         // Title bar
