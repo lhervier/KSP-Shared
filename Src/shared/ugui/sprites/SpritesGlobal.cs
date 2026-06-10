@@ -74,5 +74,30 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
             _borderCache[key] = sprite;
             return sprite;
         }
+
+        /// <summary>Sprite 9-slice : fond + bordure en haut et en bas uniquement (séparateurs horizontaux).</summary>
+        public static Sprite HorizontalBorders(Color fill, Color border, int thickness)
+        {
+            string key = BorderKey("hborder", fill, border, thickness);
+            if (_borderCache.TryGetValue(key, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            int height = 2 * thickness + 1;
+            var tex = TextureUtils.MakeHorizontalBordersTexture(fill, border, thickness);
+            var sprite = Sprite.Create(
+                tex,
+                new Rect(0f, 0f, 1f, height),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0u,
+                SpriteMeshType.FullRect,
+                // (left, bottom, right, top) — pas de bordure horizontale, thickness en haut + bas
+                new Vector4(0f, thickness, 0f, thickness));
+            sprite.hideFlags = HideFlags.HideAndDontSave;
+            _borderCache[key] = sprite;
+            return sprite;
+        }
     }
 }
