@@ -58,7 +58,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         public void Start()
         {
             _popupDialog?.onDestroy.AddListener(OnPopupDestroyed);
-            GameEvents.onLevelWasLoaded.Add(OnLevelWasLoaded);
+            GameEvents.onLevelWasLoaded.Add(OnSceneLoaded);
 
             if( this._closeButtonController != null )
             {
@@ -79,7 +79,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // Pure cleanup: do NOT dismiss the dialog here. This runs on both teardown paths (the
             // owner-driven Dismiss and KSP destroying the popup itself), and in both the popup is
             // already being destroyed — dismissing again here would re-enter the teardown.
-            GameEvents.onLevelWasLoaded.Remove(OnLevelWasLoaded);
+            GameEvents.onLevelWasLoaded.Remove(OnSceneLoaded);
             _popupDialog?.onDestroy.RemoveListener(OnPopupDestroyed);
         }
 
@@ -110,7 +110,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         /// <summary>
         /// Re-asserts the window's interactivity after a KSP scene change (no-op if it is closed).
         /// </summary>
-        private void OnLevelWasLoaded(GameScenes scene)
+        // Not named OnLevelWasLoaded: that name collides with Unity's deprecated magic message, which
+        // expects an (int) parameter and logs a warning when found on a MonoBehaviour.
+        private void OnSceneLoaded(GameScenes scene)
         {
             this.RestoreInteractivity();
         }
