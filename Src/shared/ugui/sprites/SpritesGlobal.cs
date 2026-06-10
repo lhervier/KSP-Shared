@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace com.github.lhervier.ksp.shared.ugui.sprites
@@ -5,6 +6,15 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
     /// <summary>Applies ksp_cheatsheet mockup colors to a KSP PopupDialog shell.</summary>
     internal static class SpritesGlobal
     {
+        // Cache des sprites 9-slice, indexé par leurs paramètres. Le nombre de combinaisons distinctes
+        // est petit (couleurs de la palette) : le cache plafonne donc à quelques entrées.
+        private static readonly Dictionary<string, Sprite> _borderCache = new Dictionary<string, Sprite>();
+
+        private static string BorderKey(string kind, Color fill, Color border, int thickness)
+        {
+            return $"{kind}|{fill}|{border}|{thickness}";
+        }
+        
         private static Sprite _fillSprite;
         public static Sprite FillSprite
         {
@@ -39,6 +49,29 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
                 SpriteMeshType.FullRect,
                 new Vector4(thickness, thickness, thickness, thickness));
             sprite.hideFlags = HideFlags.HideAndDontSave;
+            return sprite;
+        }
+
+        public static Sprite Border(Color fill, Color border, int thickness)
+        {
+            string key = BorderKey("border", fill, border, thickness);
+            if (_borderCache.TryGetValue(key, out Sprite cached) && cached != null)
+            {
+                return cached;
+            }
+
+            int size = 2 * thickness + 1;
+            var tex = TextureUtils.MakeBorderTexture(fill, border, thickness);
+            var sprite = Sprite.Create(
+                tex,
+                new Rect(0f, 0f, size, size),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0u,
+                SpriteMeshType.FullRect,
+                new Vector4(thickness, thickness, thickness, thickness));
+            sprite.hideFlags = HideFlags.HideAndDontSave;
+            _borderCache[key] = sprite;
             return sprite;
         }
     }

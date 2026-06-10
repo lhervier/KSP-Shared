@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using com.github.lhervier.ksp.bookmarksmod.ui.ugui.sprites;
 using com.github.lhervier.ksp.shared.ugui.overlay;
 using com.github.lhervier.ksp.shared.ugui.styles;
+using com.github.lhervier.ksp.shared.ugui.sprites;
 
 namespace com.github.lhervier.ksp.shared.ugui.combo
 {
@@ -79,7 +79,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             var headerRect = headerGo.GetComponent<RectTransform>();
 
             var headerImage = headerGo.AddComponent<Image>();
-            headerImage.sprite = Sprites.Border(ComboPalette.BackgroundColor, ComboPalette.BorderColor, 1);
+            headerImage.sprite = SpritesGlobal.Border(ComboPalette.BackgroundColor, ComboPalette.BorderColor, 1);
             headerImage.type = Image.Type.Sliced;
             headerImage.color = Color.white;
             headerImage.raycastTarget = true;
@@ -159,7 +159,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             le.ignoreLayout = true;
 
             var image = dropdownGo.AddComponent<Image>();
-            image.sprite = Sprites.Border(ComboPalette.ComboBgColor, ComboPalette.BorderColor, 1);
+            image.sprite = SpritesGlobal.Border(ComboPalette.ComboBgColor, ComboPalette.BorderColor, 1);
             image.type = Image.Type.Sliced;
             image.color = Color.white;
             image.raycastTarget = true;
@@ -179,7 +179,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             viewportRect.offsetMax = Vector2.zero;
             viewportGo.AddComponent<RectMask2D>();
             var viewportImage = viewportGo.AddComponent<Image>();
-            viewportImage.sprite = Sprites.Fill;
+            viewportImage.sprite = SpritesGlobal.FillSprite;
             viewportImage.type = Image.Type.Simple;
             viewportImage.color = Color.clear;
             viewportImage.raycastTarget = true;

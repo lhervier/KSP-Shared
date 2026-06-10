@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
-using com.github.lhervier.ksp.bookmarksmod.ui.ugui.sprites;
 using com.github.lhervier.ksp.shared.ugui.styles;
+using com.github.lhervier.ksp.shared.ugui.sprites;
 
 namespace com.github.lhervier.ksp.shared.ugui.combo
 {
@@ -43,7 +43,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             le.minHeight = le.preferredHeight = ComboPalette.Height;
 
             var image = itemGo.AddComponent<Image>();
-            image.sprite = Sprites.Fill;
+            image.sprite = SpritesGlobal.FillSprite;
             image.type = Image.Type.Simple;
             image.color = Color.white;
             image.raycastTarget = true;
