@@ -39,9 +39,16 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         }
 
         private Vector2 _position;
+        private bool _hasPosition;
         public PopupController Position(Vector2 pos)
         {
             this._position = pos;
+            this._hasPosition = true;
+            return this;
+        }
+        public PopupController ResetPosition()
+        {
+            this._hasPosition = false;
             return this;
         }
 
@@ -136,7 +143,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             // Wait one frame so KSP's layout pass (which re-applies the spawn position) has settled.
             yield return null;
-            if( _position != null )
+            if( _hasPosition )
             {
                 SetPosition(_position);
             }

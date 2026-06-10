@@ -50,16 +50,30 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         }
 
         private Vector2 _position;
+        private bool _hasPosition = false;
         public PopupBuilder<T, C> Position(Vector2 position)
         {
             this._position = position;
+            this._hasPosition = true;
+            return this;
+        }
+        public PopupBuilder<T, C> ResetPosition()
+        {
+            this._hasPosition = false;
             return this;
         }
 
         private Vector2 _size;
+        private bool _hasSize = false;
         public PopupBuilder<T, C> Size(Vector2 size)
         {
             this._size = size;
+            this._hasSize = true;
+            return this;
+        }
+        public PopupBuilder<T, C> ResetSize()
+        {
+            this._hasSize = false;
             return this;
         }
 
@@ -76,7 +90,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
             float positionX;
             float positionY;
-            if( _position != null )
+            if( _hasPosition )
             {
                 positionX = _position.x;
                 positionY = _position.y;
@@ -88,7 +102,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             }
             float width;
             float height;
-            if( _size != null )
+            if( _hasSize )
             {
                 width = _size.x;
                 height = _size.y;
@@ -190,12 +204,16 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             GameObject titleBarGo = this.CreateTitleBar(out ButtonController closeButtonController);
             titleBarGo.transform.SetParent(popupDialog.popupWindow.transform, false);
             
-            return popupDialog.popupWindow
+            PopupController popupController = popupDialog.popupWindow
                 .AddComponent<PopupController>()
                 .PopupDialog(popupDialog)
-                .Position(_position)
                 .CanvasGroup(canvasGroup)
                 .CloseButtonController(closeButtonController);
+            if( _hasPosition )
+            {
+                popupController = popupController.Position(_position);
+            }
+            return popupController;
         }
 
         // =================================================
