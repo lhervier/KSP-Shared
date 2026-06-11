@@ -36,6 +36,11 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         private GameObject _dropdown;
         private RectTransform _dropdownRect;
         private RectTransform _content;
+
+        // Parents the dropdown/overlay are reparented away from on Open and restored to on Collapse,
+        // so they float above everything while open yet stay owned by (and die with) this combo.
+        private Transform _dropdownHome;
+        private Transform _overlayHome;
         public ComboController DropDown(GameObject dropDown, RectTransform content)
         {
             this._dropdown = dropDown;
@@ -91,6 +96,10 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             foreach (var item in _items) {
                 item.OnClick.Remove(OnItemClicked);
             }
+            // While open these live under the root canvas, not under us: Unity won't cascade-destroy
+            // them with the combo, so we destroy them explicitly to avoid orphaning them on screen.
+            if (_dropdown != null) Destroy(_dropdown);
+            if (_overlayController != null) Destroy(_overlayController.gameObject);
         }
 
         // =============================
@@ -141,10 +150,24 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         {
             if (_dropdown == null) return;
 
-            // Le piège passe au premier plan, puis le dropdown par-dessus le piège.
-            if (_overlayController != null) { _overlayController.gameObject.SetActive(true); _overlayController.transform.SetAsLastSibling(); }
+            // Float above EVERYTHING by reparenting the trap then the dropdown onto the host canvas
+            // and making them the last siblings: render order within one canvas follows the
+            // hierarchy, so this guarantees foreground without depending on KSP's canvas sorting
+            // orders. Home parents are kept so Collapse can restore them (and they die with us).
+            // worldPositionStays:false keeps the trap centred (anchoredPosition 0) and harmless for
+            // the dropdown, which is repositioned by world corners just below.
+            Transform top = ResolveTopCanvas();
+
+            if (_overlayController != null) {
+                _overlayHome = _overlayController.transform.parent;
+                _overlayController.gameObject.SetActive(true);
+                if (top != null) _overlayController.transform.SetParent(top, false);
+                _overlayController.transform.SetAsLastSibling();
+            }
+            _dropdownHome = _dropdown.transform.parent;
             _dropdown.SetActive(true);
-            _dropdown.transform.SetAsLastSibling();   // au premier plan, par-dessus le contenu du menu
+            if (top != null) _dropdown.transform.SetParent(top, false);
+            _dropdown.transform.SetAsLastSibling();
 
             // Hauteur = contenu, plafonnée (au-delà → scroll) ; largeur = celle de l'en-tête.
             LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
@@ -161,8 +184,26 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
         public void Collapse()
         {
-            if (_dropdown != null) _dropdown.SetActive(false);
-            if (_overlayController != null) _overlayController.gameObject.SetActive(false);
+            // Restore the home parents we moved them away from in Open (keep local layout: false).
+            if (_dropdown != null) {
+                _dropdown.SetActive(false);
+                if (_dropdownHome != null) { _dropdown.transform.SetParent(_dropdownHome, false); _dropdownHome = null; }
+            }
+            if (_overlayController != null) {
+                _overlayController.gameObject.SetActive(false);
+                if (_overlayHome != null) { _overlayController.transform.SetParent(_overlayHome, false); _overlayHome = null; }
+            }
+        }
+
+        // The NEAREST enclosing canvas' transform — i.e. the very surface the host window renders on.
+        // Reparenting here + SetAsLastSibling puts the dropdown above the window (a sibling drawn
+        // earlier) without leaving that canvas. NOT rootCanvas: a KSP popup lives on a high-order
+        // overrideSorting sub-canvas, so climbing to the top canvas would sink the dropdown behind
+        // the window (and into a different CanvasScaler, breaking its width).
+        private Transform ResolveTopCanvas()
+        {
+            Canvas canvas = _dropdown.GetComponentInParent<Canvas>();
+            return canvas != null ? canvas.transform : _dropdown.transform.root;
         }
 
         // ========================================
