@@ -41,14 +41,6 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             return this;
         }
 
-        /// <summary>Centered icon displayed instead of the text label (fixed/square mode only).</summary>
-        private Sprite _icon;
-        public ButtonBuilder Icon(Sprite icon)
-        {
-            this._icon = icon;
-            return this;
-        }
-
         private bool _interactable = true;
         public ButtonBuilder Interactable(bool interactable)
         {
@@ -141,27 +133,19 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             // CanvasGroup applies a global alpha to the button (background + text + future children),
             // and also blocks raycasts when disabled — matches the mockup's .ka:disabled { opacity: .25 }.
             var canvasGroup = buttonGo.AddComponent<CanvasGroup>();
-            TextMeshProUGUI label = null;
-            Image icon = null;
-            if (_icon != null)
-            {
-                icon = BuildIcon(buttonGo);
-            }
-            else
-            {
-                label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
-            }
+            TextMeshProUGUI label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
 
-            // Hover tint (label/icon → white) only for fixed/square buttons, via PointerHandler rather
+            // Hover tint (label → white) only for fixed/square buttons, via PointerHandler rather
             // than EventTrigger: PointerHandler does NOT implement IScrollHandler/IDragHandler, so the
             // mouse wheel and drag bubble up to a parent ScrollRect instead of being swallowed by the
             // button. Text buttons keep their configured color (no hover tint), matching their styled look.
+            // Icon-only buttons go through the same path: their label is a <sprite ... tint=1> tag,
+            // tinted by the label color.
             if (!_autoWidth)
             {
-                Graphic face = (Graphic)label ?? icon;
                 var hover = buttonGo.AddComponent<PointerHandler>();
-                hover.OnEnter = () => face.color = Color.white;
-                hover.OnExit = () => face.color = _textColor;
+                hover.OnEnter = () => label.color = Color.white;
+                hover.OnExit = () => label.color = _textColor;
             }
 
             // Apply the initial interactable state via the controller (single source of truth)
@@ -170,30 +154,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
                 .Button(button)
                 .CanvasGroup(canvasGroup)
                 .Label(label)
-                .Icon(icon)
                 .Interactable(_interactable);
-        }
-
-        /// <summary>
-        /// Centered icon, tinted like a label would be (square mode).
-        /// </summary>
-        /// <param name="buttonGo">The parent game object</param>
-        /// <returns></returns>
-        private Image BuildIcon(GameObject buttonGo)
-        {
-            var iconGo = new GameObject("Icon", typeof(RectTransform));
-            iconGo.transform.SetParent(buttonGo.transform, false);
-            var iconRect = iconGo.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRect.sizeDelta = new Vector2(ButtonPalette.ButtonIconSize, ButtonPalette.ButtonIconSize);
-
-            var icon = iconGo.AddComponent<Image>();
-            icon.sprite = _icon;
-            icon.preserveAspect = true;
-            icon.color = _textColor;
-            icon.raycastTarget = false;
-            return icon;
         }
 
         /// <summary>
@@ -214,6 +175,8 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
             label.font = DefaultPalette.Font;
+            // Labels can carry <sprite name=...> tags (icon-only buttons in particular).
+            label.spriteAsset = SpritesIcons.SpriteAsset;
             label.fontSize = _fontSize;
             label.color = _textColor;
             label.alignment = TextAlignmentOptions.Center;
@@ -245,6 +208,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
             label.font = DefaultPalette.Font;
+            label.spriteAsset = SpritesIcons.SpriteAsset;
             label.fontSize = _fontSize;
             label.color = _textColor;
             label.alignment = TextAlignmentOptions.Center;

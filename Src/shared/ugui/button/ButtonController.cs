@@ -26,13 +26,6 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             return this;
         }
 
-        private Image _icon;
-        public ButtonController Icon(Image icon)
-        {
-            this._icon = icon;
-            return this;
-        }
-
         private Button _button;
         public ButtonController Button(Button button)
         {
@@ -64,10 +57,6 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             if (_label != null)
             {
                 this._restingTextColor = _label.color;
-            }
-            else if (_icon != null)
-            {
-                this._restingTextColor = _icon.color;
             }
         }
 
@@ -108,9 +97,8 @@ namespace com.github.lhervier.ksp.shared.ugui.button
                 _canvasGroup.blocksRaycasts = interactable;
                 _canvasGroup.interactable = interactable;
             }
-            // Reset to the resting color in case the label/icon was left in the "hover white" state when disabled.
+            // Reset to the resting color in case the label was left in the "hover white" state when disabled.
             if (_label != null) _label.color = _restingTextColor;
-            if (_icon != null) _icon.color = _restingTextColor;
         }
     }
 }
