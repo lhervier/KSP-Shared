@@ -121,6 +121,15 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             }
         }
 
+        public void Select(string current)
+        {
+            if (_value != null) _value.text = Label(current);
+
+            foreach (var item in _items) {
+                item.Select(item.GetId() == current);
+            }
+        }
+
         public void Toggle()
         {
             if (_dropdown == null) return;
