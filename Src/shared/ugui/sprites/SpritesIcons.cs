@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
@@ -93,6 +94,33 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         }
 
         /// <summary>
+        /// Loads a sprite texture from GameData (path relative to it, without extension),
+        /// or null when the file is missing.
+        /// </summary>
+        private static Texture2D LoadSpriteTexture(string texturePath)
+        {
+            // The PNG is read straight from disk instead of going through GameDatabase:
+            // the database compresses textures to DXT (which smudges thin anti-aliased
+            // strokes) and generates no mipmaps (which aliases the heavy downscale to
+            // text height). RGBA32 + trilinear mips keep the icons clean at any size;
+            // Clamp avoids the opposite edge bleeding into the border texels.
+            string file = Path.Combine(
+                Path.Combine(KSPUtil.ApplicationRootPath, "GameData"),
+                texturePath + ".png"
+            );
+            if (!File.Exists(file))
+            {
+                return null;
+            }
+            var tex = new Texture2D(2, 2, TextureFormat.RGBA32, true);
+            tex.LoadImage(File.ReadAllBytes(file));
+            tex.filterMode = FilterMode.Trilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.hideFlags = HideFlags.HideAndDontSave;
+            return tex;
+        }
+
+        /// <summary>
         /// Tells whether the given sprite name resolves through <see cref="SpriteAsset"/>
         /// (fallbacks included), i.e. whether a &lt;sprite name="..."&gt; tag would render.
         /// </summary>
@@ -118,7 +146,7 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         /// </summary>
         private static TMP_SpriteAsset BuildSingleSpriteAsset(SpriteDef def)
         {
-            var tex = GameDatabase.Instance.GetTexture(def.TexturePath, false);
+            var tex = LoadSpriteTexture(def.TexturePath);
             if (tex == null)
             {
                 LOGGER.LogWarning("Sprite texture not found: " + def.TexturePath);
