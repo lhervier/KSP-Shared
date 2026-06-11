@@ -38,6 +38,20 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             return this;
         }
 
+        private bool _hasPreferredWidth = false;
+        private float _preferredWidth = 0f;
+        public ComboBuilder PreferredWidth(float preferredWidth)
+        {
+            this._preferredWidth = preferredWidth;
+            this._hasPreferredWidth = true;
+            return this;
+        }
+        public ComboBuilder ResetPreferredWidth()
+        {
+            this._hasPreferredWidth = false;
+            return this;
+        }
+
         private Func<string, string> _labelFor;
         public ComboBuilder LabelFor(Func<string, string> labelFor)
         {
@@ -61,8 +75,11 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(rootGo.transform, false);
-            var labelLe = labelGo.AddComponent<LayoutElement>();
-            labelLe.minWidth = labelLe.preferredWidth = 46f;
+            if( _hasPreferredWidth )
+            {
+                var labelLe = labelGo.AddComponent<LayoutElement>();
+                labelLe.minWidth = labelLe.preferredWidth = _preferredWidth;
+            }
             var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
             label.fontSize = ComboPalette.LabelFontSize;
