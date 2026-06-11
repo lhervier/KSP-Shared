@@ -388,16 +388,12 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             var labelGo = new GameObject("Popup.TitleBar.Label", typeof(RectTransform));
             
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = this._title.ToUpperInvariant();
-            label.font = DefaultPalette.Font;
             label.fontSize = PopupPalette.TitleBarLabelFontSize;
             label.fontStyle = FontStyles.Bold;
             label.color = PopupPalette.TitleBarLabelColor;
             label.alignment = TextAlignmentOptions.Left;
-            label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
 
             return labelGo;
         }

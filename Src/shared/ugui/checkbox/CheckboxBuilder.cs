@@ -131,15 +131,11 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             var labelLayoutElement = labelGo.AddComponent<LayoutElement>();
             labelLayoutElement.flexibleWidth = _greedy ? 1f : 0f;
 
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
-            label.font = DefaultPalette.Font;
             label.fontSize = CheckboxPalette.CheckboxFontSize;
             label.color = DefaultPalette.LabelColor;
             label.alignment = TextAlignmentOptions.Left;
-            label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
             
             return rootGo
                 .AddComponent<CheckboxController>()

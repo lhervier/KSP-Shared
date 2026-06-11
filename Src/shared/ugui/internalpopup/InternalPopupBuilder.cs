@@ -154,16 +154,13 @@ namespace com.github.lhervier.ksp.shared.ugui.internalpopup
         {
             var go = new GameObject("Title", typeof(RectTransform));
             go.transform.SetParent(card, false);
-            var label = go.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(go);
             label.text = _title;
-            label.font = DefaultPalette.Font;
             label.fontSize = InternalPopupPalette.TitleFontSize;
             label.fontStyle = FontStyles.Bold;
             label.color = _titleColor;
             label.alignment = TextAlignmentOptions.TopLeft;
             label.enableWordWrapping = true;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
         }
     }
 }

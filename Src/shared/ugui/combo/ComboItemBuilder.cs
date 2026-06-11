@@ -70,15 +70,11 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(itemGo.transform, false);
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
-            label.font = DefaultPalette.Font;
             label.fontSize = ComboPalette.ComboFontSize;
             label.color = _selected ? ComboPalette.ItemSelectedColor : ComboPalette.ItemColor;
             label.alignment = TextAlignmentOptions.Left;
-            label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
 
             return itemGo
                 .AddComponent<ComboItemController>()

@@ -63,15 +63,11 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             labelGo.transform.SetParent(rootGo.transform, false);
             var labelLe = labelGo.AddComponent<LayoutElement>();
             labelLe.minWidth = labelLe.preferredWidth = 46f;
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
-            label.font = DefaultPalette.Font;
             label.fontSize = ComboPalette.LabelFontSize;
             label.color = ComboPalette.LabelColor;
             label.alignment = TextAlignmentOptions.Left;
-            label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
 
             // En-tête : bouton plein largeur [valeur (flexible)] [caret]
             var headerGo = new GameObject("Header", typeof(RectTransform));
@@ -111,26 +107,18 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             valueGo.transform.SetParent(headerGo.transform, false);
             var valueLe = valueGo.AddComponent<LayoutElement>();
             valueLe.flexibleWidth = 1f;
-            var value = valueGo.AddComponent<TextMeshProUGUI>();
-            value.font = DefaultPalette.Font;
+            var value = UGUILabels.AddLabel(valueGo);
             value.fontSize = ComboPalette.ComboFontSize;
             value.color = ComboPalette.ComboTextColor;
             value.alignment = TextAlignmentOptions.Left;
-            value.enableWordWrapping = false;
-            value.overflowMode = TextOverflowModes.Overflow;
-            value.raycastTarget = false;
 
             var caretGo = new GameObject("Caret", typeof(RectTransform));
             caretGo.transform.SetParent(headerGo.transform, false);
-            var caret = caretGo.AddComponent<TextMeshProUGUI>();
+            var caret = UGUILabels.AddLabel(caretGo);
             caret.text = CaretGlyph;
-            caret.font = DefaultPalette.Font;
             caret.fontSize = ComboPalette.CaretFontSize;
             caret.color = ComboPalette.CaretColor;
             caret.alignment = TextAlignmentOptions.Center;
-            caret.enableWordWrapping = false;
-            caret.overflowMode = TextOverflowModes.Overflow;
-            caret.raycastTarget = false;
 
             // Dropdown flottant : enfant du MÊME parent (le panneau du menu), positionné en absolu
             // sous l'en-tête à l'ouverture. ignoreLayout pour ne pas occuper de place dans le menu.

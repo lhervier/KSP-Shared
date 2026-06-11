@@ -172,15 +172,11 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             labelRect.offsetMin = Vector2.zero;
             labelRect.offsetMax = Vector2.zero;
 
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
-            label.font = DefaultPalette.Font;
-            // Labels can carry <sprite name=...> tags (icon-only buttons in particular).
-            label.spriteAsset = SpritesIcons.SpriteAsset;
             label.fontSize = _fontSize;
             label.color = _textColor;
             label.alignment = TextAlignmentOptions.Center;
-            label.raycastTarget = false;
             return label;
         }
 
@@ -205,16 +201,11 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(buttonGo.transform, false);
-            var label = labelGo.AddComponent<TextMeshProUGUI>();
+            var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
-            label.font = DefaultPalette.Font;
-            label.spriteAsset = SpritesIcons.SpriteAsset;
             label.fontSize = _fontSize;
             label.color = _textColor;
             label.alignment = TextAlignmentOptions.Center;
-            label.enableWordWrapping = false;
-            label.overflowMode = TextOverflowModes.Overflow;
-            label.raycastTarget = false;
             return label;
         }
     }
