@@ -21,6 +21,7 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
         public const float TitleBarHeight = 28f;
         public const float TitleBarSeparatorHeight = 1f;
         public const float TitleBarActionGroupBorderThickness = 1f;
+        public const int TitleBarLabelFontSize = 12;
         public static readonly Color TitleBarLabelColor = new Color(232f / 255f, 232f / 255f, 232f / 255f);
         
         // Colors

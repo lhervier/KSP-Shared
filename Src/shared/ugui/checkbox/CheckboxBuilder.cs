@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
 
@@ -130,14 +131,14 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             var labelLayoutElement = labelGo.AddComponent<LayoutElement>();
             labelLayoutElement.flexibleWidth = _greedy ? 1f : 0f;
 
-            var label = labelGo.AddComponent<Text>();
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
-            label.font = HighLogic.UISkin.font;
+            label.font = DefaultPalette.Font;
             label.fontSize = CheckboxPalette.CheckboxFontSize;
             label.color = DefaultPalette.LabelColor;
-            label.alignment = TextAnchor.MiddleLeft;
-            label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            label.verticalOverflow = VerticalWrapMode.Overflow;
+            label.alignment = TextAlignmentOptions.Left;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             label.raycastTarget = false;
             
             return rootGo

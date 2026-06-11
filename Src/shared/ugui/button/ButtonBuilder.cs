@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
 
@@ -37,6 +38,14 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         public ButtonBuilder Label(string label)
         {
             this._label = label;
+            return this;
+        }
+
+        /// <summary>Centered icon displayed instead of the text label (fixed/square mode only).</summary>
+        private Sprite _icon;
+        public ButtonBuilder Icon(Sprite icon)
+        {
+            this._icon = icon;
             return this;
         }
 
@@ -132,17 +141,27 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             // CanvasGroup applies a global alpha to the button (background + text + future children),
             // and also blocks raycasts when disabled — matches the mockup's .ka:disabled { opacity: .25 }.
             var canvasGroup = buttonGo.AddComponent<CanvasGroup>();
-            Text label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
-            
-            // Hover tint (label → white) only for fixed/square buttons, via PointerHandler rather than
-            // EventTrigger: PointerHandler does NOT implement IScrollHandler/IDragHandler, so the mouse
-            // wheel and drag bubble up to a parent ScrollRect instead of being swallowed by the button.
-            // Text buttons keep their configured color (no hover tint), matching their styled look.
+            TextMeshProUGUI label = null;
+            Image icon = null;
+            if (_icon != null)
+            {
+                icon = BuildIcon(buttonGo);
+            }
+            else
+            {
+                label = _autoWidth ? BuildAutoWidthLabel(buttonGo) : BuildFixedLabel(buttonGo);
+            }
+
+            // Hover tint (label/icon → white) only for fixed/square buttons, via PointerHandler rather
+            // than EventTrigger: PointerHandler does NOT implement IScrollHandler/IDragHandler, so the
+            // mouse wheel and drag bubble up to a parent ScrollRect instead of being swallowed by the
+            // button. Text buttons keep their configured color (no hover tint), matching their styled look.
             if (!_autoWidth)
             {
+                Graphic face = (Graphic)label ?? icon;
                 var hover = buttonGo.AddComponent<PointerHandler>();
-                hover.OnEnter = () => label.color = Color.white;
-                hover.OnExit = () => label.color = _textColor;
+                hover.OnEnter = () => face.color = Color.white;
+                hover.OnExit = () => face.color = _textColor;
             }
 
             // Apply the initial interactable state via the controller (single source of truth)
@@ -151,7 +170,30 @@ namespace com.github.lhervier.ksp.shared.ugui.button
                 .Button(button)
                 .CanvasGroup(canvasGroup)
                 .Label(label)
+                .Icon(icon)
                 .Interactable(_interactable);
+        }
+
+        /// <summary>
+        /// Centered icon, tinted like a label would be (square mode).
+        /// </summary>
+        /// <param name="buttonGo">The parent game object</param>
+        /// <returns></returns>
+        private Image BuildIcon(GameObject buttonGo)
+        {
+            var iconGo = new GameObject("Icon", typeof(RectTransform));
+            iconGo.transform.SetParent(buttonGo.transform, false);
+            var iconRect = iconGo.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+            iconRect.sizeDelta = new Vector2(ButtonPalette.ButtonIconSize, ButtonPalette.ButtonIconSize);
+
+            var icon = iconGo.AddComponent<Image>();
+            icon.sprite = _icon;
+            icon.preserveAspect = true;
+            icon.color = _textColor;
+            icon.raycastTarget = false;
+            return icon;
         }
 
         /// <summary>
@@ -159,7 +201,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         /// </summary>
         /// <param name="buttonGo">The parent game object</param>
         /// <returns></returns>
-        private Text BuildFixedLabel(GameObject buttonGo)
+        private TextMeshProUGUI BuildFixedLabel(GameObject buttonGo)
         {
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(buttonGo.transform, false);
@@ -169,12 +211,12 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             labelRect.offsetMin = Vector2.zero;
             labelRect.offsetMax = Vector2.zero;
 
-            var label = labelGo.AddComponent<Text>();
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
-            label.font = HighLogic.UISkin.font;
+            label.font = DefaultPalette.Font;
             label.fontSize = _fontSize;
             label.color = _textColor;
-            label.alignment = TextAnchor.MiddleCenter;
+            label.alignment = TextAlignmentOptions.Center;
             label.raycastTarget = false;
             return label;
         }
@@ -184,7 +226,7 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         /// </summary>
         /// <param name="buttonGo">The parent game object</param>
         /// <returns></returns>
-        private Text BuildAutoWidthLabel(GameObject buttonGo)
+        private TextMeshProUGUI BuildAutoWidthLabel(GameObject buttonGo)
         {
             var layout = buttonGo.AddComponent<HorizontalLayoutGroup>();
             layout.padding = new RectOffset(Mathf.RoundToInt(_paddingH), Mathf.RoundToInt(_paddingH), 0, 0);
@@ -200,14 +242,14 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
             var labelGo = new GameObject("Label", typeof(RectTransform));
             labelGo.transform.SetParent(buttonGo.transform, false);
-            var label = labelGo.AddComponent<Text>();
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
-            label.font = HighLogic.UISkin.font;
+            label.font = DefaultPalette.Font;
             label.fontSize = _fontSize;
             label.color = _textColor;
-            label.alignment = TextAnchor.MiddleCenter;
-            label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            label.verticalOverflow = VerticalWrapMode.Overflow;
+            label.alignment = TextAlignmentOptions.Center;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             label.raycastTarget = false;
             return label;
         }

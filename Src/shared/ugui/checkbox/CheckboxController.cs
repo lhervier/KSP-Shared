@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 namespace com.github.lhervier.ksp.shared.ugui.checkbox
 {
@@ -25,8 +25,8 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             return this;
         }
 
-        private Text _label;
-        public CheckboxController Label(Text label)
+        private TextMeshProUGUI _label;
+        public CheckboxController Label(TextMeshProUGUI label)
         {
             _label = label;
             return this;

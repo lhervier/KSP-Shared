@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 
 namespace com.github.lhervier.ksp.shared.ugui.button
@@ -18,10 +19,17 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         // Life cycle
         // =====================================================
 
-        private Text _label;
-        public ButtonController Label(Text label)
+        private TextMeshProUGUI _label;
+        public ButtonController Label(TextMeshProUGUI label)
         {
             this._label = label;
+            return this;
+        }
+
+        private Image _icon;
+        public ButtonController Icon(Image icon)
+        {
+            this._icon = icon;
             return this;
         }
 
@@ -53,9 +61,13 @@ namespace com.github.lhervier.ksp.shared.ugui.button
                 _button.onClick.AddListener(_OnClick);
             }
             this.SetInteractable(_interactable);
-            if (_label != null) 
+            if (_label != null)
             {
                 this._restingTextColor = _label.color;
+            }
+            else if (_icon != null)
+            {
+                this._restingTextColor = _icon.color;
             }
         }
 
@@ -96,8 +108,9 @@ namespace com.github.lhervier.ksp.shared.ugui.button
                 _canvasGroup.blocksRaycasts = interactable;
                 _canvasGroup.interactable = interactable;
             }
-            // Reset to the resting color in case the label was left in the "hover white" state when disabled.
+            // Reset to the resting color in case the label/icon was left in the "hover white" state when disabled.
             if (_label != null) _label.color = _restingTextColor;
+            if (_icon != null) _icon.color = _restingTextColor;
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.overlay;
 using com.github.lhervier.ksp.shared.ugui.styles;
 
@@ -18,8 +19,8 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         // Life cycle
         // =======================================
 
-        private Text _value;
-        public ComboController Value(Text value)
+        private TextMeshProUGUI _value;
+        public ComboController Value(TextMeshProUGUI value)
         {
             _value = value;
             return this;

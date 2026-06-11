@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.overlay;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
@@ -15,7 +16,9 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
     /// </summary>
     public class ComboBuilder : IUGUIBuilder<ComboController>
     {
-        private const string CaretGlyph = "▼";   // ▼ (U+25BC) — glyphe confirmé rendu par la police UISkin
+        // Preferred caret with degraded alternatives, picked at build time depending on what the
+        // font (base + fallbacks) can actually render. "↓" is known to be available.
+        private static string CaretGlyph => DefaultPalette.PickGlyph("▼", "▾", "↓");
 
         // ====================================
         // Builder parameters
@@ -60,14 +63,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             labelGo.transform.SetParent(rootGo.transform, false);
             var labelLe = labelGo.AddComponent<LayoutElement>();
             labelLe.minWidth = labelLe.preferredWidth = 46f;
-            var label = labelGo.AddComponent<Text>();
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = _label;
-            label.font = HighLogic.UISkin.font;
+            label.font = DefaultPalette.Font;
             label.fontSize = ComboPalette.LabelFontSize;
             label.color = ComboPalette.LabelColor;
-            label.alignment = TextAnchor.MiddleLeft;
-            label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            label.verticalOverflow = VerticalWrapMode.Overflow;
+            label.alignment = TextAlignmentOptions.Left;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             label.raycastTarget = false;
 
             // En-tête : bouton plein largeur [valeur (flexible)] [caret]
@@ -108,25 +111,25 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             valueGo.transform.SetParent(headerGo.transform, false);
             var valueLe = valueGo.AddComponent<LayoutElement>();
             valueLe.flexibleWidth = 1f;
-            var value = valueGo.AddComponent<Text>();
-            value.font = HighLogic.UISkin.font;
+            var value = valueGo.AddComponent<TextMeshProUGUI>();
+            value.font = DefaultPalette.Font;
             value.fontSize = ComboPalette.ComboFontSize;
             value.color = ComboPalette.ComboTextColor;
-            value.alignment = TextAnchor.MiddleLeft;
-            value.horizontalOverflow = HorizontalWrapMode.Overflow;
-            value.verticalOverflow = VerticalWrapMode.Overflow;
+            value.alignment = TextAlignmentOptions.Left;
+            value.enableWordWrapping = false;
+            value.overflowMode = TextOverflowModes.Overflow;
             value.raycastTarget = false;
 
             var caretGo = new GameObject("Caret", typeof(RectTransform));
             caretGo.transform.SetParent(headerGo.transform, false);
-            var caret = caretGo.AddComponent<Text>();
+            var caret = caretGo.AddComponent<TextMeshProUGUI>();
             caret.text = CaretGlyph;
-            caret.font = HighLogic.UISkin.font;
+            caret.font = DefaultPalette.Font;
             caret.fontSize = ComboPalette.CaretFontSize;
             caret.color = ComboPalette.CaretColor;
-            caret.alignment = TextAnchor.MiddleCenter;
-            caret.horizontalOverflow = HorizontalWrapMode.Overflow;
-            caret.verticalOverflow = VerticalWrapMode.Overflow;
+            caret.alignment = TextAlignmentOptions.Center;
+            caret.enableWordWrapping = false;
+            caret.overflowMode = TextOverflowModes.Overflow;
             caret.raycastTarget = false;
 
             // Dropdown flottant : enfant du MÊME parent (le panneau du menu), positionné en absolu

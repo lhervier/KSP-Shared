@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
 using com.github.lhervier.ksp.shared.ugui.button;
@@ -333,12 +334,15 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             var leftColumnLayoutElement = leftColumnGo.AddComponent<LayoutElement>();
             leftColumnLayoutElement.flexibleWidth = 1f;
 
-            // Horizontal layout containing icon + label
+            // Horizontal layout containing icon + label. Children sizes are layout-controlled so the
+            // column reports its TRUE preferred width (icon + text). With uncontrolled widths, the
+            // preferred width would come from the children's default sizeDelta (100px for the label),
+            // over-reserving space and squeezing the right column even when the title is short.
             var leftColumnLayout = leftColumnGo.AddComponent<HorizontalLayoutGroup>();
             leftColumnLayout.spacing = DefaultPalette.Spacing;
             leftColumnLayout.childAlignment = TextAnchor.MiddleLeft;
-            leftColumnLayout.childControlWidth = false;
-            leftColumnLayout.childControlHeight = false;
+            leftColumnLayout.childControlWidth = true;
+            leftColumnLayout.childControlHeight = true;
             leftColumnLayout.childForceExpandWidth = false;
             leftColumnLayout.childForceExpandHeight = false;
 
@@ -357,7 +361,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         public GameObject CreateTitleBarIcon()
         {
             var iconGo = new GameObject("Popup.TitleBar.Icon", typeof(RectTransform));
-            
+
             // The icon itself
             var iconImage = iconGo.AddComponent<Image>();
             iconImage.sprite = this._icon;
@@ -369,11 +373,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             }
             else
             {
-                var iconRect = iconGo.GetComponent<RectTransform>();
-                iconRect.sizeDelta = new Vector2(
-                    DefaultPalette.IconSize,
-                    DefaultPalette.IconSize
-                );
+                // Pin the icon to IconSize: without a LayoutElement, the parent layout would size
+                // it to the Image's preferred size, which is the sprite's native resolution.
+                var iconElement = iconGo.AddComponent<LayoutElement>();
+                iconElement.minWidth = DefaultPalette.IconSize;
+                iconElement.minHeight = DefaultPalette.IconSize;
+                iconElement.preferredWidth = DefaultPalette.IconSize;
+                iconElement.preferredHeight = DefaultPalette.IconSize;
             }
             return iconGo;
         }
@@ -382,15 +388,15 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             var labelGo = new GameObject("Popup.TitleBar.Label", typeof(RectTransform));
             
-            var label = labelGo.AddComponent<Text>();
+            var label = labelGo.AddComponent<TextMeshProUGUI>();
             label.text = this._title.ToUpperInvariant();
-            label.font = HighLogic.UISkin.font;
-            label.fontSize = 12;
-            label.fontStyle = FontStyle.Bold;
+            label.font = DefaultPalette.Font;
+            label.fontSize = PopupPalette.TitleBarLabelFontSize;
+            label.fontStyle = FontStyles.Bold;
             label.color = PopupPalette.TitleBarLabelColor;
-            label.alignment = TextAnchor.MiddleLeft;
-            label.horizontalOverflow = HorizontalWrapMode.Overflow;
-            label.verticalOverflow = VerticalWrapMode.Overflow;
+            label.alignment = TextAlignmentOptions.Left;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             label.raycastTarget = false;
 
             return labelGo;
