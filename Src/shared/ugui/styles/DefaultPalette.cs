@@ -9,6 +9,10 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
     {
         private static readonly ModLogger LOGGER = new ModLogger("Fonts");
 
+        // =======================================================
+        // Custom font
+        // =======================================================
+
         // Font used by every text element of the plugin UI.
         // Resolved lazily because UISkinManager is only populated once the game UI is loaded.
         private static TMP_FontAsset _font;
@@ -42,7 +46,7 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
             // exposing every other font asset shipped with the game (the CJK ones in particular
             // cover most symbols). The game's asset is cloned so it stays untouched for stock UI.
             var font = Object.Instantiate(baseFont);
-            font.name = baseFont.name + " (SteamInput)";
+            font.name = baseFont.name + " (" + Constants.ModName + ")";
             font.fallbackFontAssets = new List<TMP_FontAsset>();
             if (baseFont.fallbackFontAssets != null)
             {
@@ -97,7 +101,16 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
             return candidates[candidates.Length - 1];
         }
 
+        // ===============================================================
+        // Shared icons
+        // ===============================================================
+
+        // Circular refresh arrow, used wherever the "↻" glyph would be (missing from the game fonts).
+        public static string RefreshIconPath = Constants.ModName + "/Textures/refresh_icon";
+
+        // ==============================================================
         // Default values
+        // ==============================================================
         public const float PaddingLeft = 8f;
         public const float PaddingRight = 8f;
         public const float PaddingTop = 5f;

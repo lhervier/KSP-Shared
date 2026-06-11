@@ -15,9 +15,7 @@ namespace com.github.lhervier.ksp.shared
 
     public class ModLogger 
     {
-        private static readonly string PREFIX = "[" + 
-            Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyTitleAttribute>().Title + 
-        "]";
+        private static readonly string PREFIX = "[" + Constants.ModName + "]";
         private static LogLevel _logLevel = LogLevel.Info;
         
         private readonly string additionalPrefix = "";
