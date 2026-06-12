@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using TMPro;
+using static com.github.lhervier.ksp.shared.ugui.styles.Utils;
 
 namespace com.github.lhervier.ksp.shared.ugui.styles
 {
@@ -118,10 +119,15 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
         public const float Spacing = 6f;
 
         // Default colors
-        public static readonly Color AccentColor = new Color(141f / 255f, 190f / 255f, 69f / 255f);
-        public static readonly Color LabelColor = new Color(187f / 255f, 187f / 255f, 187f / 255f);
+        public static readonly Color AccentColor = Rgb(141, 190, 69);
+        public static readonly Color AccentBorderColor = Rgb(74, 110, 32);
+        public static readonly Color AccentBgColor = Rgba(141, 190, 69, 0.10f);
+        public static readonly Color LabelColor = Rgb(187, 187, 187);
         public static readonly Color FieldBackgroundColor = new Color(42f / 255f, 42f / 255f, 42f / 255f);
         public static readonly Color SeparatorColor = new Color(42f / 255f, 42f / 255f, 42f / 255f);
+
+        public static readonly Color DangerColor = Rgb(192, 89, 79);
+        public static readonly Color WarmColor = Rgb(169, 138, 74);
 
         // Icons
         public const int IconSize = 18;
