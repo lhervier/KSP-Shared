@@ -1,4 +1,6 @@
+using System.Reflection.Emit;
 using com.github.lhervier.ksp.shared.ugui.styles;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,13 +31,20 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             return this;
         }
 
+        private TextMeshProUGUI _label;
+        public ComboItemController Label(TextMeshProUGUI label)
+        {
+            this._label = label;
+            return this;
+        }
+
         public void Start()
         {
             if( _button != null )
             {
                 _button.onClick.AddListener(_OnClick);
             }
-            Select(this._selected);
+            SelectInternal(this._selected);
         }
 
         public void OnDestroy()
@@ -72,6 +81,20 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         public void Select(bool select)
         {
             if( select == _selected ) return;
+            this.SelectInternal(select);
+        }
+
+        // =======================================================
+        // Internal helpers
+        // =======================================================
+        
+        private void SelectInternal(bool select)
+        {
+            if( _button == null || _label == null )
+            {
+                return;
+            }
+
             _selected = select;
 
             var colors = _button.colors;
@@ -79,12 +102,15 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             {
                 colors.normalColor = ComboPalette.ItemSelectedBgColor;
                 colors.selectedColor = ComboPalette.ItemSelectedBgColor;
+                _label.color = ComboPalette.ItemSelectedColor;
             }
             else
             {
                 colors.normalColor = Color.clear;
                 colors.selectedColor = Color.clear;
+                _label.color = ComboPalette.ItemColor;
             }
+            _button.colors = colors;
         }
     }
 }

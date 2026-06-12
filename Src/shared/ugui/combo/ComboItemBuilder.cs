@@ -73,13 +73,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             var label = UGUILabels.AddLabel(labelGo);
             label.text = _label;
             label.fontSize = ComboPalette.ComboFontSize;
-            label.color = _selected ? ComboPalette.ItemSelectedColor : ComboPalette.ItemColor;
             label.alignment = TextAlignmentOptions.Left;
 
             return itemGo
                 .AddComponent<ComboItemController>()
                 .Id(_id)
-                .Button(button);
+                .Button(button)
+                .Label(label)
+                .Selected(_selected);
         }
     }
 }
