@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
+using com.github.lhervier.ksp.shared.ugui.combo.itemcontent;
 
 namespace com.github.lhervier.ksp.shared.ugui.combo
 {
@@ -29,10 +29,10 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             return this;
         }
 
-        private string _label;
-        public ComboItemBuilder Label(string label)
+        private BaseComboItemContentBuilder _contentBuilder;
+        public ComboItemBuilder Content(BaseComboItemContentBuilder contentBuilder)
         {
-            _label = label;
+            _contentBuilder = contentBuilder;
             return this;
         }
 
@@ -68,18 +68,19 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = true;
 
-            var labelGo = new GameObject("Label", typeof(RectTransform));
-            labelGo.transform.SetParent(itemGo.transform, false);
-            var label = UGUILabels.AddLabel(labelGo);
-            label.text = _label;
-            label.fontSize = ComboPalette.ComboFontSize;
-            label.alignment = TextAlignmentOptions.Left;
+            // The row owns the click and the selection background; what is shown inside it is delegated
+            // to the content builder so callers can render options freely. The builder is mandatory:
+            // resolving the default (a plain label) is the combo's job, not this row's.
+            ComboItemContentController content = _contentBuilder
+                .Id(_id)
+                .Build();
+            content.transform.SetParent(itemGo.transform, false);
 
             return itemGo
                 .AddComponent<ComboItemController>()
                 .Id(_id)
                 .Button(button)
-                .Label(label)
+                .Content(content)
                 .Selected(_selected);
         }
     }

@@ -5,6 +5,7 @@ using TMPro;
 using com.github.lhervier.ksp.shared.ugui.overlay;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.sprites;
+using com.github.lhervier.ksp.shared.ugui.combo.itemcontent;
 
 namespace com.github.lhervier.ksp.shared.ugui.combo
 {
@@ -56,6 +57,15 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         public ComboBuilder LabelFor(Func<string, string> labelFor)
         {
             this._labelFor = labelFor;
+            return this;
+        }
+
+        // Controls how each option is rendered IN THE DROPDOWN LIST only (the header's current value
+        // is always a plain label resolved via LabelFor). Null → default plain-label content.
+        private BaseComboItemContentBuilder _itemContentBuilder;
+        public ComboBuilder ItemContent(BaseComboItemContentBuilder itemContentBuilder)
+        {
+            this._itemContentBuilder = itemContentBuilder;
             return this;
         }
 
@@ -154,7 +164,8 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
                 .DropDown(dropdown, content)
                 .Button(headerBtn)
                 .OverlayController(overlay)
-                .LabelFor(_labelFor);
+                .LabelFor(_labelFor)
+                .ItemContent(_itemContentBuilder);
         }
 
         // Panneau scrollable du dropdown (construit détaché et masqué ; positionné/affiché à l'ouverture).

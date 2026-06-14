@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using com.github.lhervier.ksp.shared.ugui.overlay;
 using com.github.lhervier.ksp.shared.ugui.styles;
+using com.github.lhervier.ksp.shared.ugui.combo.itemcontent;
+using com.github.lhervier.ksp.shared.ugui.combo.itemcontent.label;
 
 namespace com.github.lhervier.ksp.shared.ugui.combo
 {
@@ -71,6 +73,13 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             return this;
         }
 
+        private BaseComboItemContentBuilder _itemContentBuilder;
+        public ComboController ItemContent(BaseComboItemContentBuilder itemContentBuilder)
+        {
+            this._itemContentBuilder = itemContentBuilder;
+            return this;
+        }
+
         public void Start()
         {
             // A click on the overlay (anywhere outside the dropdown) collapses the combo.
@@ -117,12 +126,21 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             _items.Clear();
             if (options == null) return;
 
+            // Resolving the default list rendering is the combo's job: a plain label fed by our own
+            // LabelFor. A caller-supplied builder takes over entirely (and brings its own dependencies).
+            if( _itemContentBuilder == null )
+            {
+                LabelComboItemContentBuilder labelBuilder = new LabelComboItemContentBuilder()
+                    .LabelFor(Label);
+                _itemContentBuilder = labelBuilder;
+            }
+
             foreach (string opt in options)
             {
                 ComboItemController ctrl = new ComboItemBuilder()
                     .Parent(_content)
                     .Id(opt)
-                    .Label(Label(opt))
+                    .Content(_itemContentBuilder)
                     .Selected(opt == current)
                     .Build();
                 ctrl.OnClick.Add(OnItemClicked);

@@ -1,6 +1,5 @@
-using System.Reflection.Emit;
+using com.github.lhervier.ksp.shared.ugui.combo.itemcontent;
 using com.github.lhervier.ksp.shared.ugui.styles;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,10 +30,10 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             return this;
         }
 
-        private TextMeshProUGUI _label;
-        public ComboItemController Label(TextMeshProUGUI label)
+        private ComboItemContentController _content;
+        public ComboItemController Content(ComboItemContentController content)
         {
-            this._label = label;
+            this._content = content;
             return this;
         }
 
@@ -90,27 +89,24 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         
         private void SelectInternal(bool select)
         {
-            if( _button == null || _label == null )
+            if( _button == null )
             {
                 return;
             }
 
             _selected = select;
 
+            // The row only owns its selection background; how the content reflects selection
+            // (text color, icon swap...) is the content's own responsibility.
             var colors = _button.colors;
-            if( _selected )
-            {
-                colors.normalColor = ComboPalette.ItemSelectedBgColor;
-                colors.selectedColor = ComboPalette.ItemSelectedBgColor;
-                _label.color = ComboPalette.ItemSelectedColor;
-            }
-            else
-            {
-                colors.normalColor = Color.clear;
-                colors.selectedColor = Color.clear;
-                _label.color = ComboPalette.ItemColor;
-            }
+            colors.normalColor = _selected ? ComboPalette.ItemSelectedBgColor : Color.clear;
+            colors.selectedColor = _selected ? ComboPalette.ItemSelectedBgColor : Color.clear;
             _button.colors = colors;
+
+            if( _content != null )
+            {
+                _content.SetSelected(_selected);
+            }
         }
     }
 }
