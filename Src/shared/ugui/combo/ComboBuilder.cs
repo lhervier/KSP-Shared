@@ -130,14 +130,33 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             headerLayout.childForceExpandWidth = false;
             headerLayout.childForceExpandHeight = true;
 
-            var valueGo = new GameObject("Value", typeof(RectTransform));
-            valueGo.transform.SetParent(headerGo.transform, false);
-            var valueLe = valueGo.AddComponent<LayoutElement>();
+            // Value clipped to its width: a long current value is truncated rather than overflowing
+            // past the header (and under whatever sits next to the combo). The clip flexes to fill the
+            // header; the label fills the clip and is masked, so its intrinsic width never drives layout.
+            var valueClipGo = new GameObject("ValueClip", typeof(RectTransform));
+            valueClipGo.transform.SetParent(headerGo.transform, false);
+            valueClipGo.AddComponent<RectMask2D>();
+            var valueLe = valueClipGo.AddComponent<LayoutElement>();
             valueLe.flexibleWidth = 1f;
+            valueLe.minWidth = 0f;
+
+            // Pinned to the clip's LEFT edge and sized to its content, so a long value overflows to the
+            // right (clipped by the mask) and its START stays visible — filling the clip + left align
+            // is not enough, the overflow then hides the beginning instead of the end.
+            var valueGo = new GameObject("Value", typeof(RectTransform));
+            valueGo.transform.SetParent(valueClipGo.transform, false);
+            var valueRect = valueGo.GetComponent<RectTransform>();
+            valueRect.anchorMin = new Vector2(0f, 0f);
+            valueRect.anchorMax = new Vector2(0f, 1f);
+            valueRect.pivot = new Vector2(0f, 0.5f);
+            valueRect.anchoredPosition = Vector2.zero;
             var value = UGUILabels.AddLabel(valueGo);
             value.fontSize = ComboPalette.ComboFontSize;
             value.color = ComboPalette.ComboTextColor;
             value.alignment = TextAlignmentOptions.Left;
+            var valueFitter = valueGo.AddComponent<ContentSizeFitter>();
+            valueFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            valueFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             var caretGo = new GameObject("Caret", typeof(RectTransform));
             caretGo.transform.SetParent(headerGo.transform, false);
