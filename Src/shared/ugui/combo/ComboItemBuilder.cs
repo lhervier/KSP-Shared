@@ -40,8 +40,11 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         {
             var itemGo = new GameObject("Item", typeof(RectTransform));
             itemGo.transform.SetParent(_parent, false);
+            // Row height follows the content's preferred size (so a multi-line content fits); Height is
+            // only a floor. The standard single-line height is carried by the content itself (e.g. the
+            // default label), keeping the row as tall as whatever it is asked to display.
             var le = itemGo.AddComponent<LayoutElement>();
-            le.minHeight = le.preferredHeight = ComboPalette.Height;
+            le.minHeight = ComboPalette.Height;
 
             var image = itemGo.AddComponent<Image>();
             image.sprite = SpritesGlobal.FillSprite;

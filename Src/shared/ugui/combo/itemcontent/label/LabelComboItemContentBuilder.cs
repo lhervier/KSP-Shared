@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using com.github.lhervier.ksp.shared.ugui.styles;
 using com.github.lhervier.ksp.shared.ugui.combo.itemcontent;
@@ -29,6 +30,10 @@ namespace com.github.lhervier.ksp.shared.ugui.combo.itemcontent.label
             tmp.text = _labelFor != null ? _labelFor(GetId()) : GetId();
             tmp.fontSize = ComboPalette.ComboFontSize;
             tmp.alignment = TextAlignmentOptions.Left;
+
+            // The default content carries the combo's standard single-line row height.
+            var le = labelGo.AddComponent<LayoutElement>();
+            le.minHeight = le.preferredHeight = ComboPalette.Height;
 
             return labelGo
                 .AddComponent<LabelComboItemContentController>()
