@@ -14,56 +14,56 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
         /// <summary>Button size : square edges, or height in auto width mode.</summary>
         private float _size = ButtonPalette.ButtonSize;
-        public ButtonBuilder Size(float size)
+        public ButtonBuilder WithSize(float size)
         {
             this._size = size;
             return this;
         }
 
         private int _fontSize = ButtonPalette.ButtonFontSize;
-        public ButtonBuilder FontSize(int fontSize)
+        public ButtonBuilder WithFontSize(int fontSize)
         {
             this._fontSize = fontSize;
             return this;
         }
 
         private string _objectName = "Button";
-        public ButtonBuilder ObjectName(string objectName)
+        public ButtonBuilder WithObjectName(string objectName)
         {
             this._objectName = objectName;
             return this;
         }
 
         private string _label = string.Empty;
-        public ButtonBuilder Label(string label)
+        public ButtonBuilder WithLabel(string label)
         {
             this._label = label;
             return this;
         }
 
-        private bool _interactable = true;
-        public ButtonBuilder Interactable(bool interactable)
+        private bool _interactableState = true;
+        public ButtonBuilder WithInteractableState(bool interactable)
         {
-            this._interactable = interactable;
+            this._interactableState = interactable;
             return this;
         }
 
         private Color _backgroundColor = ButtonPalette.ButtonColor;
-        public ButtonBuilder BackgroundColor(Color backgroundColor)
+        public ButtonBuilder WithBackgroundColor(Color backgroundColor)
         {
             this._backgroundColor = backgroundColor;
             return this;
         }
 
         private Color _hoverColor = ButtonPalette.ButtonHoverColor;
-        public ButtonBuilder HoverColor(Color hoverColor)
+        public ButtonBuilder WithHoverColor(Color hoverColor)
         {
             this._hoverColor = hoverColor;
             return this;
         }
 
         private Color _textColor = ButtonPalette.ButtonTextColor;
-        public ButtonBuilder TextColor(Color textColor)
+        public ButtonBuilder WithTextColor(Color textColor)
         {
             this._textColor = textColor;
             return this;
@@ -71,14 +71,14 @@ namespace com.github.lhervier.ksp.shared.ugui.button
 
         private bool _autoWidth = false;
         private float _paddingH = 0f;
-        public ButtonBuilder AutoWidth(float paddingH)
+        public ButtonBuilder WithAutoWidth(float paddingH)
         {
             this._autoWidth = true;
             this._paddingH = paddingH;
             return this;
         }
 
-        public ButtonBuilder DisableAutoWidth()
+        public ButtonBuilder WithoutAutoWidth()
         {
             this._autoWidth = false;
             this._paddingH = 0f;
@@ -151,10 +151,10 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             // Apply the initial interactable state via the controller (single source of truth)
             return buttonGo
                 .AddComponent<ButtonController>()
-                .Button(button)
-                .CanvasGroup(canvasGroup)
-                .Label(label)
-                .Interactable(_interactable);
+                .WithButtonComponent(button)
+                .WithCanvasGroup(canvasGroup)
+                .WithLabelComponent(label)
+                .WithInteractableState(_interactableState);
         }
 
         /// <summary>

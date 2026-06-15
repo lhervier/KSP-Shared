@@ -22,35 +22,35 @@ namespace com.github.lhervier.ksp.shared.ugui.internalpopup
         // ===============================================
 
         private Transform _parent;
-        public InternalPopupBuilder<TContent, TFooter> Parent(Transform parent)
+        public InternalPopupBuilder<TContent, TFooter> WithParent(Transform parent)
         {
             this._parent = parent;
             return this;
         }
 
         private string _title = string.Empty;
-        public InternalPopupBuilder<TContent, TFooter> Title(string title)
+        public InternalPopupBuilder<TContent, TFooter> WithTitle(string title)
         {
             this._title = title;
             return this;
         }
 
         private Color _titleColor = Color.white;
-        public InternalPopupBuilder<TContent, TFooter> TitleColor(Color titleColor)
+        public InternalPopupBuilder<TContent, TFooter> WithTitleColor(Color titleColor)
         {
             this._titleColor = titleColor;
             return this;
         }
 
         private IUGUIBuilder<TContent> _contentBuilder;
-        public InternalPopupBuilder<TContent, TFooter> Content(IUGUIBuilder<TContent> contentBuilder)
+        public InternalPopupBuilder<TContent, TFooter> WithContentBuilder(IUGUIBuilder<TContent> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
         }
 
         private IUGUIBuilder<TFooter> _footerBuilder;
-        public InternalPopupBuilder<TContent, TFooter> Footer(IUGUIBuilder<TFooter> footerBuilder)
+        public InternalPopupBuilder<TContent, TFooter> WithFooterBuilder(IUGUIBuilder<TFooter> footerBuilder)
         {
             this._footerBuilder = footerBuilder;
             return this;
@@ -147,7 +147,7 @@ namespace com.github.lhervier.ksp.shared.ugui.internalpopup
 
             return rootGo
                 .AddComponent<InternalPopupController>()
-                .Panel(panelGo);
+                .WithPanel(panelGo);
         }
 
         private void CreateTitle(Transform card)

@@ -17,7 +17,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo.itemcontent.label
         // Label resolver owned by this builder (its own dependency, injected at construction), not a
         // parameter of the generic Build contract. Null → the raw id is shown.
         private Func<string, string> _labelFor;
-        public LabelComboItemContentBuilder LabelFor(Func<string, string> labelFor)
+        public LabelComboItemContentBuilder WithLabelFor(Func<string, string> labelFor)
         {
             this._labelFor = labelFor;
             return this;
@@ -37,7 +37,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo.itemcontent.label
 
             return labelGo
                 .AddComponent<LabelComboItemContentController>()
-                .Label(tmp);
+                .WithLabelComponent(tmp);
         }
     }
 }

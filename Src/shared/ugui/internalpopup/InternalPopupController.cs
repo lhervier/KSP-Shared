@@ -11,7 +11,7 @@ namespace com.github.lhervier.ksp.shared.ugui.internalpopup
     {
         // The dimmed, modal panel holding the card. Toggled by Show()/Close(); the root stays active.
         private GameObject _panel;
-        public InternalPopupController Panel(GameObject panel)
+        public InternalPopupController WithPanel(GameObject panel)
         {
             this._panel = panel;
             return this;

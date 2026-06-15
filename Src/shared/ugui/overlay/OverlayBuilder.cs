@@ -49,7 +49,7 @@ namespace com.github.lhervier.ksp.shared.ugui.overlay
 
             return overlayGo
                 .AddComponent<OverlayController>()
-                .Overlay(button);
+                .WithButtonComponent(button);
         }
     }
 }

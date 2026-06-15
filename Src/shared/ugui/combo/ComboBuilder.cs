@@ -26,14 +26,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         // ====================================
 
         private Transform _parent;
-        public ComboBuilder Parent(Transform parent)
+        public ComboBuilder WithParent(Transform parent)
         {
             this._parent = parent;
             return this;
         }
 
         private string _label;
-        public ComboBuilder Label(string label)
+        public ComboBuilder WithLabel(string label)
         {
             _label = label;
             return this;
@@ -41,20 +41,20 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
         private bool _hasPreferredWidth = false;
         private float _preferredWidth = 0f;
-        public ComboBuilder PreferredWidth(float preferredWidth)
+        public ComboBuilder WithPreferredWidth(float preferredWidth)
         {
             this._preferredWidth = preferredWidth;
             this._hasPreferredWidth = true;
             return this;
         }
-        public ComboBuilder ResetPreferredWidth()
+        public ComboBuilder WithoutPreferredWidth()
         {
             this._hasPreferredWidth = false;
             return this;
         }
 
         private Func<string, string> _labelFor;
-        public ComboBuilder LabelFor(Func<string, string> labelFor)
+        public ComboBuilder WithLabelFor(Func<string, string> labelFor)
         {
             this._labelFor = labelFor;
             return this;
@@ -63,7 +63,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         // Controls how each option is rendered IN THE DROPDOWN LIST only (the header's current value
         // is always a plain label resolved via LabelFor). Null → default plain-label content.
         private BaseComboItemContentBuilder _itemContentBuilder;
-        public ComboBuilder ItemContent(BaseComboItemContentBuilder itemContentBuilder)
+        public ComboBuilder WithItemContentBuilder(BaseComboItemContentBuilder itemContentBuilder)
         {
             this._itemContentBuilder = itemContentBuilder;
             return this;
@@ -178,13 +178,13 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
             return rootGo
                 .AddComponent<ComboController>()
-                .Value(value)
-                .HeaderRect(headerRect)
-                .DropDown(dropdown, content)
-                .Button(headerBtn)
-                .OverlayController(overlay)
-                .LabelFor(_labelFor)
-                .ItemContent(_itemContentBuilder);
+                .WithLabelComponent(value)
+                .WithHeaderRect(headerRect)
+                .WithDropDown(dropdown, content)
+                .WithButtonComponent(headerBtn)
+                .WithOverlayController(overlay)
+                .WithLabelFor(_labelFor)
+                .WithItemContentBuilder(_itemContentBuilder);
         }
 
         // Panneau scrollable du dropdown (construit détaché et masqué ; positionné/affiché à l'ouverture).

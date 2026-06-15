@@ -10,28 +10,28 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         public EventData<string> OnClick = new EventData<string>("ComboItem.OnClick");
 
         private string _id;
-        public ComboItemController Id(string id)
+        public ComboItemController WithId(string id)
         {
             this._id = id;
             return this;
         }
 
         private bool _selected = false;
-        public ComboItemController Selected(bool selected)
+        public ComboItemController WithSelectedState(bool selected)
         {
             this._selected = selected;
             return this;
         }
 
         private Button _button;
-        public ComboItemController Button(Button button)
+        public ComboItemController WithButtonComponent(Button button)
         {
             _button = button;
             return this;
         }
 
         private ComboItemContentController _content;
-        public ComboItemController Content(ComboItemContentController content)
+        public ComboItemController WithContentBuilder(ComboItemContentController content)
         {
             this._content = content;
             return this;

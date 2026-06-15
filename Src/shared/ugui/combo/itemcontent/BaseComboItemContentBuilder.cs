@@ -11,7 +11,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo.itemcontent
     public abstract class BaseComboItemContentBuilder : IUGUIBuilder<ComboItemContentController>
     {
         private string _id;
-        public BaseComboItemContentBuilder Id(string id)
+        public BaseComboItemContentBuilder WithId(string id)
         {
             this._id = id;
             return this;

@@ -14,14 +14,14 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
         // ===========================================
 
         private MonoBehaviour _contentController;
-        public ScrollableViewController ContentController(MonoBehaviour contentController)
+        public ScrollableViewController WithContentController(MonoBehaviour contentController)
         {
             this._contentController = contentController;
             return this;
         }
 
         private ScrollRect _scrollRect;
-        public ScrollableViewController ScrollRect(ScrollRect scrollRect)
+        public ScrollableViewController WithScrollRect(ScrollRect scrollRect)
         {
             this._scrollRect = scrollRect;
             return this;

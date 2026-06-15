@@ -12,7 +12,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo.itemcontent.label
     public class LabelComboItemContentController : ComboItemContentController
     {
         private TextMeshProUGUI _label;
-        public LabelComboItemContentController Label(TextMeshProUGUI label)
+        public LabelComboItemContentController WithLabelComponent(TextMeshProUGUI label)
         {
             this._label = label;
             return this;

@@ -16,35 +16,35 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         // ===============================================
 
         private string _popupID = "Popup";
-        public PopupBuilder<T, C> PopupID(string id)
+        public PopupBuilder<T, C> WithPopupID(string id)
         {
             this._popupID = id;
             return this;
         }
 
         private string _title = string.Empty;
-        public PopupBuilder<T, C> Title(string title)
+        public PopupBuilder<T, C> WithTitle(string title)
         {
             this._title = title;
             return this;
         }
 
         private Sprite _icon = null;
-        public PopupBuilder<T, C> Icon(Sprite icon)
+        public PopupBuilder<T, C> WithIcon(Sprite icon)
         {
             this._icon = icon;
             return this;
         }
 
         private IUGUIBuilder<T> _titleBarBuilder;
-        public PopupBuilder<T, C> TitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
+        public PopupBuilder<T, C> WithTitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
         {
             this._titleBarBuilder = titleBarBuilder;
             return this;
         }
 
         private IUGUIBuilder<C> _contentBuilder;
-        public PopupBuilder<T, C> ContentBuilder(IUGUIBuilder<C> contentBuilder)
+        public PopupBuilder<T, C> WithContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
@@ -52,13 +52,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         private Vector2 _position;
         private bool _hasPosition = false;
-        public PopupBuilder<T, C> Position(Vector2 position)
+        public PopupBuilder<T, C> WithPosition(Vector2 position)
         {
             this._position = position;
             this._hasPosition = true;
             return this;
         }
-        public PopupBuilder<T, C> ResetPosition()
+        public PopupBuilder<T, C> WithoutPosition()
         {
             this._hasPosition = false;
             return this;
@@ -66,13 +66,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         private Vector2 _size;
         private bool _hasSize = false;
-        public PopupBuilder<T, C> Size(Vector2 size)
+        public PopupBuilder<T, C> WithSize(Vector2 size)
         {
             this._size = size;
             this._hasSize = true;
             return this;
         }
-        public PopupBuilder<T, C> ResetSize()
+        public PopupBuilder<T, C> WithoutSize()
         {
             this._hasSize = false;
             return this;
@@ -207,12 +207,12 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             
             PopupController popupController = popupDialog.popupWindow
                 .AddComponent<PopupController>()
-                .PopupDialog(popupDialog)
-                .CanvasGroup(canvasGroup)
-                .CloseButtonController(closeButtonController);
+                .WithPopupDialog(popupDialog)
+                .WithCanvasGroup(canvasGroup)
+                .WithCloseButtonController(closeButtonController);
             if( _hasPosition )
             {
-                popupController = popupController.Position(_position);
+                popupController = popupController.WithPosition(_position);
             }
             return popupController;
         }
@@ -419,11 +419,11 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             actionGroupLabelController.transform.SetParent(rightRowGo.transform, false);
 
             closeButtonController = new ButtonBuilder()
-                .ObjectName("Popup.TitleBar.RightColumn.CloseButton")
-                .Label("×")
-                .Interactable(true)
-                .BackgroundColor(PopupPalette.TitleBarButtonColor)
-                .HoverColor(PopupPalette.TitleBarButtonHoverColor)
+                .WithObjectName("Popup.TitleBar.RightColumn.CloseButton")
+                .WithLabel("×")
+                .WithInteractableState(true)
+                .WithBackgroundColor(PopupPalette.TitleBarButtonColor)
+                .WithHoverColor(PopupPalette.TitleBarButtonHoverColor)
                 .Build();
             closeButtonController.transform.SetParent(rightRowGo.transform, false);
             

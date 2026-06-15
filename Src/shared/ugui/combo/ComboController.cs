@@ -22,14 +22,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         // =======================================
 
         private TextMeshProUGUI _value;
-        public ComboController Value(TextMeshProUGUI value)
+        public ComboController WithLabelComponent(TextMeshProUGUI value)
         {
             _value = value;
             return this;
         }
 
         private RectTransform _headerRect;
-        public ComboController HeaderRect(RectTransform headerRect)
+        public ComboController WithHeaderRect(RectTransform headerRect)
         {
             _headerRect = headerRect;
             return this;
@@ -43,7 +43,7 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         // so they float above everything while open yet stay owned by (and die with) this combo.
         private Transform _dropdownHome;
         private Transform _overlayHome;
-        public ComboController DropDown(GameObject dropDown, RectTransform content)
+        public ComboController WithDropDown(GameObject dropDown, RectTransform content)
         {
             this._dropdown = dropDown;
             this._dropdownRect = _dropdown.GetComponent<RectTransform>();
@@ -52,14 +52,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
         }
 
         private Button _button;
-        public ComboController Button(Button button)
+        public ComboController WithButtonComponent(Button button)
         {
             _button = button;
             return this;
         }
 
         private OverlayController _overlayController;
-        public ComboController OverlayController(OverlayController overlay)
+        public ComboController WithOverlayController(OverlayController overlay)
         {
             _overlayController = overlay;
             return this;
@@ -67,14 +67,14 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
 
         
         private Func<string, string> _labelFor;
-        public ComboController LabelFor(Func<string, string> labelFor)
+        public ComboController WithLabelFor(Func<string, string> labelFor)
         {
             this._labelFor = labelFor;
             return this;
         }
 
         private BaseComboItemContentBuilder _itemContentBuilder;
-        public ComboController ItemContent(BaseComboItemContentBuilder itemContentBuilder)
+        public ComboController WithItemContentBuilder(BaseComboItemContentBuilder itemContentBuilder)
         {
             this._itemContentBuilder = itemContentBuilder;
             return this;
@@ -131,17 +131,17 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             if( _itemContentBuilder == null )
             {
                 LabelComboItemContentBuilder labelBuilder = new LabelComboItemContentBuilder()
-                    .LabelFor(Label);
+                    .WithLabelFor(Label);
                 _itemContentBuilder = labelBuilder;
             }
 
             foreach (string opt in options)
             {
                 ComboItemController ctrl = new ComboItemBuilder()
-                    .Parent(_content)
-                    .Id(opt)
-                    .Content(_itemContentBuilder)
-                    .Selected(opt == current)
+                    .WithParent(_content)
+                    .WithId(opt)
+                    .WithContentBuilder(_itemContentBuilder)
+                    .WithSelected(opt == current)
                     .Build();
                 ctrl.OnClick.Add(OnItemClicked);
                 _items.Add(ctrl);

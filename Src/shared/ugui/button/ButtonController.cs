@@ -20,28 +20,28 @@ namespace com.github.lhervier.ksp.shared.ugui.button
         // =====================================================
 
         private TextMeshProUGUI _label;
-        public ButtonController Label(TextMeshProUGUI label)
+        public ButtonController WithLabelComponent(TextMeshProUGUI label)
         {
             this._label = label;
             return this;
         }
 
         private Button _button;
-        public ButtonController Button(Button button)
+        public ButtonController WithButtonComponent(Button button)
         {
             this._button = button;
             return this;
         }
 
         private CanvasGroup _canvasGroup;
-        public ButtonController CanvasGroup(CanvasGroup canvasGroup)
+        public ButtonController WithCanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
             return this;
         }
 
         private bool _interactable = true;
-        public ButtonController Interactable(bool interactable)
+        public ButtonController WithInteractableState(bool interactable)
         {
             this._interactable = interactable;
             return this;

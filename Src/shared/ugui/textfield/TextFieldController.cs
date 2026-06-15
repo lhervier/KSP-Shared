@@ -29,7 +29,7 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         // ============================================
 
         private TMP_InputField _input;
-        public TextFieldController Input(TMP_InputField input)
+        public TextFieldController WithInputField(TMP_InputField input)
         {
             this._input = input;
             return this;

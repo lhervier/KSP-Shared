@@ -18,28 +18,28 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         // ===================================================
 
         private Transform _parent;
-        public TextFieldBuilder Parent(Transform parent)
+        public TextFieldBuilder WithParent(Transform parent)
         {
             this._parent = parent;
             return this;
         }
 
         private string _text = string.Empty;
-        public TextFieldBuilder Text(string text)
+        public TextFieldBuilder WithText(string text)
         {
             this._text = text ?? string.Empty;
             return this;
         }
 
         private string _placeholder = string.Empty;
-        public TextFieldBuilder Placeholder(string placeholder)
+        public TextFieldBuilder WithPlaceholder(string placeholder)
         {
             this._placeholder = placeholder ?? string.Empty;
             return this;
         }
 
         private bool _multiline = false;
-        public TextFieldBuilder Multiline(bool multiline)
+        public TextFieldBuilder WithMultilineState(bool multiline)
         {
             this._multiline = multiline;
             return this;
@@ -48,14 +48,14 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         // Field height. Default: TextFieldPalette.FieldHeight (suited to single-line); a multi-line
         // caller usually sets a larger height.
         private float _height = TextFieldPalette.FieldHeight;
-        public TextFieldBuilder Height(float height)
+        public TextFieldBuilder WithHeight(float height)
         {
             this._height = height;
             return this;
         }
 
         private int _fontSize = TextFieldPalette.FontSize;
-        public TextFieldBuilder FontSize(int fontSize)
+        public TextFieldBuilder WithFontSize(int fontSize)
         {
             this._fontSize = fontSize;
             return this;
@@ -105,7 +105,7 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
 
             return inputGo
                 .AddComponent<TextFieldController>()
-                .Input(input);
+                .WithInputField(input);
         }
 
         private TextMeshProUGUI NewFieldText(Transform parent, string objectName, int padH, int padV, TextAlignmentOptions align)

@@ -8,7 +8,7 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
     /// <summary>
     /// Builds a vertically scrollable view: a clipped viewport with a right-side scrollbar, and a content
     /// container that grows to fit its children. The content is produced by the supplied content builder
-    /// (see <see cref="ContentBuilder"/>). The view fills the rect it is given — callers own its placement.
+    /// (see <see cref="WithContentBuilder"/>). The view fills the rect it is given — callers own its placement.
     /// </summary>
     public class ScrollableViewBuilder<C> : IUGUIBuilder<ScrollableViewController> where C : MonoBehaviour
     {
@@ -18,63 +18,63 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
 
         /// <summary>The builder producing the scrolled content. Its result is mounted in the viewport.</summary>
         private IUGUIBuilder<C> _contentBuilder;
-        public ScrollableViewBuilder<C> ContentBuilder(IUGUIBuilder<C> contentBuilder)
+        public ScrollableViewBuilder<C> WithContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
         }
 
         private string _objectName = "ScrollableView";
-        public ScrollableViewBuilder<C> ObjectName(string objectName)
+        public ScrollableViewBuilder<C> WithObjectName(string objectName)
         {
             this._objectName = objectName;
             return this;
         }
 
         private float _scrollbarWidth = ScrollableViewPalette.ScrollbarWidth;
-        public ScrollableViewBuilder<C> ScrollbarWidth(float width)
+        public ScrollableViewBuilder<C> WithScrollbarWidth(float width)
         {
             this._scrollbarWidth = width;
             return this;
         }
 
         private float _scrollSensitivity = ScrollableViewPalette.ScrollbarSensitivity;
-        public ScrollableViewBuilder<C> ScrollSensitivity(float sensitivity)
+        public ScrollableViewBuilder<C> WithScrollSensitivity(float sensitivity)
         {
             this._scrollSensitivity = sensitivity;
             return this;
         }
 
         private float _contentSpacing = 0f;
-        public ScrollableViewBuilder<C> ContentSpacing(float spacing)
+        public ScrollableViewBuilder<C> WithContentSpacing(float spacing)
         {
             this._contentSpacing = spacing;
             return this;
         }
 
         private RectOffset _contentPadding = new RectOffset(0, 0, 0, 0);
-        public ScrollableViewBuilder<C> ContentPadding(RectOffset padding)
+        public ScrollableViewBuilder<C> WithContentPadding(RectOffset padding)
         {
             this._contentPadding = padding;
             return this;
         }
 
         private Color _scrollbarBackgroundColor = ScrollableViewPalette.ScrollbarBackgroundColor;
-        public ScrollableViewBuilder<C> ScrollbarBackgroundColor(Color color)
+        public ScrollableViewBuilder<C> WithScrollbarBackgroundColor(Color color)
         {
             this._scrollbarBackgroundColor = color;
             return this;
         }
 
         private Color _handleColor = ScrollableViewPalette.ScrollbarHandleColor;
-        public ScrollableViewBuilder<C> HandleColor(Color color)
+        public ScrollableViewBuilder<C> WithHandleColor(Color color)
         {
             this._handleColor = color;
             return this;
         }
 
         private Color _handleHoverColor = ScrollableViewPalette.ScrollbarHoverColor;
-        public ScrollableViewBuilder<C> HandleHoverColor(Color color)
+        public ScrollableViewBuilder<C> WithHandleHoverColor(Color color)
         {
             this._handleHoverColor = color;
             return this;
@@ -214,8 +214,8 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
 
             return rootGo
                 .AddComponent<ScrollableViewController>()
-                .ScrollRect(scrollRect)
-                .ContentController(contentController);
+                .WithScrollRect(scrollRect)
+                .WithContentController(contentController);
         }
     }
 }

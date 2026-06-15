@@ -9,28 +9,28 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
     public class ComboItemBuilder : IUGUIBuilder<ComboItemController>
     {
         private Transform _parent;
-        public ComboItemBuilder Parent(Transform parent)
+        public ComboItemBuilder WithParent(Transform parent)
         {
             _parent = parent;
             return this;
         }
 
         private string _id;
-        public ComboItemBuilder Id(string id)
+        public ComboItemBuilder WithId(string id)
         {
             this._id = id;
             return this;
         }
 
         private bool _selected = false;
-        public ComboItemBuilder Selected(bool selected)
+        public ComboItemBuilder WithSelected(bool selected)
         {
             _selected = selected;
             return this;
         }
 
         private BaseComboItemContentBuilder _contentBuilder;
-        public ComboItemBuilder Content(BaseComboItemContentBuilder contentBuilder)
+        public ComboItemBuilder WithContentBuilder(BaseComboItemContentBuilder contentBuilder)
         {
             _contentBuilder = contentBuilder;
             return this;
@@ -75,16 +75,16 @@ namespace com.github.lhervier.ksp.shared.ugui.combo
             // to the content builder so callers can render options freely. The builder is mandatory:
             // resolving the default (a plain label) is the combo's job, not this row's.
             ComboItemContentController content = _contentBuilder
-                .Id(_id)
+                .WithId(_id)
                 .Build();
             content.transform.SetParent(itemGo.transform, false);
 
             return itemGo
                 .AddComponent<ComboItemController>()
-                .Id(_id)
-                .Button(button)
-                .Content(content)
-                .Selected(_selected);
+                .WithId(_id)
+                .WithButtonComponent(button)
+                .WithContentBuilder(content)
+                .WithSelectedState(_selected);
         }
     }
 }

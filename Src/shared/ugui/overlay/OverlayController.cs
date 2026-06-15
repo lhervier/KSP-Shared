@@ -12,7 +12,7 @@ namespace com.github.lhervier.ksp.shared.ugui.overlay
         public readonly EventVoid OnClose = new EventVoid("Overlay.OnClose");
 
         private Button _overlay;
-        public OverlayController Overlay(Button overlay)
+        public OverlayController WithButtonComponent(Button overlay)
         {
             this._overlay = overlay;
             return this;

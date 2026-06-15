@@ -12,21 +12,21 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
         // ============================================
 
         private PointerHandler _clickHandler;
-        public CheckboxController ClickHandler(PointerHandler clickHandler)
+        public CheckboxController WithClickHandler(PointerHandler clickHandler)
         {
             this._clickHandler = clickHandler;
             return this;
         }
 
         private GameObject _checkMark;
-        public CheckboxController Checkmark(GameObject checkmark)
+        public CheckboxController WithCheckmark(GameObject checkmark)
         {
             _checkMark = checkmark;
             return this;
         }
 
         private TextMeshProUGUI _label;
-        public CheckboxController Label(TextMeshProUGUI label)
+        public CheckboxController WithLabelComponent(TextMeshProUGUI label)
         {
             _label = label;
             return this;

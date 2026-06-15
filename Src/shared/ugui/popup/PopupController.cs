@@ -17,7 +17,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         /// <summary>Inject the KSP popup this controller drives.</summary>
         private PopupDialog _popupDialog;
-        public PopupController PopupDialog(PopupDialog popupDialog)
+        public PopupController WithPopupDialog(PopupDialog popupDialog)
         {
             this._popupDialog = popupDialog;
             return this;
@@ -25,14 +25,14 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         /// <summary>Inject the popup's canvas group.</summary>
         private CanvasGroup _canvasGroup;
-        public PopupController CanvasGroup(CanvasGroup canvasGroup)
+        public PopupController WithCanvasGroup(CanvasGroup canvasGroup)
         {
             this._canvasGroup = canvasGroup;
             return this;
         }
 
         private ButtonController _closeButtonController;
-        public PopupController CloseButtonController(ButtonController closeButtonController)
+        public PopupController WithCloseButtonController(ButtonController closeButtonController)
         {
             this._closeButtonController = closeButtonController;
             return this;
@@ -40,13 +40,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
 
         private Vector2 _position;
         private bool _hasPosition;
-        public PopupController Position(Vector2 pos)
+        public PopupController WithPosition(Vector2 pos)
         {
             this._position = pos;
             this._hasPosition = true;
             return this;
         }
-        public PopupController ResetPosition()
+        public PopupController WithoutPosition()
         {
             this._hasPosition = false;
             return this;

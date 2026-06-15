@@ -13,14 +13,14 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
         // ==============================================
 
         private bool _isChecked = false;
-        public CheckboxBuilder Checked(bool isChecked)
+        public CheckboxBuilder WithCheckedState(bool isChecked)
         {
             this._isChecked = isChecked;
             return this;
         }
 
         private string _label = string.Empty;
-        public CheckboxBuilder Label(string label)
+        public CheckboxBuilder WithLabel(string label)
         {
             this._label = label ?? string.Empty;
             return this;
@@ -32,7 +32,7 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
         /// label do nothing — even if a parent layout stretches the row.
         /// </summary>
         private bool _greedy = false;
-        public CheckboxBuilder Greedy(bool greedy)
+        public CheckboxBuilder WithGreedyState(bool greedy)
         {
             this._greedy = greedy;
             return this;
@@ -139,9 +139,9 @@ namespace com.github.lhervier.ksp.shared.ugui.checkbox
             
             return rootGo
                 .AddComponent<CheckboxController>()
-                .ClickHandler(clickHandler)
-                .Checkmark(checkmarkGo)
-                .Label(label);
+                .WithClickHandler(clickHandler)
+                .WithCheckmark(checkmarkGo)
+                .WithLabelComponent(label);
         }
     }
 }
