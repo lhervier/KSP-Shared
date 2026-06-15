@@ -7,9 +7,9 @@ using com.github.lhervier.ksp.shared.ugui.styles;
 namespace com.github.lhervier.ksp.shared.ugui.textfield
 {
     /// <summary>
-    /// Construit un champ de saisie réutilisable (TMP_InputField stylé : fond bordé, viewport clippé,
-    /// texte + placeholder). Mono-ligne par défaut, multi-ligne via Multiline(true). Le verrou clavier
-    /// KSP est géré par le TextFieldController retourné. Couleurs/métriques par défaut : TextFieldPalette.
+    /// Builds a reusable text field (a styled TMP_InputField: bordered background, clipped viewport,
+    /// text + placeholder). Single-line by default, multi-line via Multiline(true). The KSP keyboard
+    /// lock is handled by the returned TextFieldController. Default colors/metrics: TextFieldPalette.
     /// </summary>
     public class TextFieldBuilder : IUGUIBuilder<TextFieldController>
     {
@@ -45,8 +45,8 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             return this;
         }
 
-        // Hauteur du champ. Par défaut : TextFieldPalette.FieldHeight (adapté au mono-ligne) ; un appelant
-        // multi-ligne fixe en général une hauteur plus grande.
+        // Field height. Default: TextFieldPalette.FieldHeight (suited to single-line); a multi-line
+        // caller usually sets a larger height.
         private float _height = TextFieldPalette.FieldHeight;
         public TextFieldBuilder Height(float height)
         {
@@ -79,7 +79,7 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             bg.color = Color.white;
             bg.raycastTarget = true;
 
-            // Le champ lui-même sert de viewport ; RectMask2D clippe le texte/placeholder débordants.
+            // The field itself acts as the viewport; RectMask2D clips the overflowing text/placeholder.
             inputGo.AddComponent<RectMask2D>();
 
             var input = inputGo.AddComponent<TMP_InputField>();

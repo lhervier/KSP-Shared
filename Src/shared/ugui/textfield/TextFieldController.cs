@@ -4,24 +4,24 @@ using TMPro;
 namespace com.github.lhervier.ksp.shared.ugui.textfield
 {
     /// <summary>
-    /// Pilote un champ de saisie partagé (mono- ou multi-ligne). Encapsule entièrement le verrou clavier
-    /// KSP : le clavier du jeu est verrouillé tant que le champ a le focus, et déverrouillé au blur (ou à
-    /// la destruction du champ). Expose la valeur via l'événement OnValueChanged et l'API Get/SetText.
+    /// Drives a shared text field (single- or multi-line). Fully encapsulates the KSP keyboard lock:
+    /// the game keyboard is locked while the field holds the focus, and unlocked on blur (or when the
+    /// field is destroyed). Exposes the value through the OnValueChanged event and the Get/SetText API.
     /// </summary>
     public class TextFieldController : MonoBehaviour
     {
-        /// <summary>Émis à chaque modification du texte (saisie clavier ou SetText).</summary>
+        /// <summary>Fired on every text change (keyboard input or SetText).</summary>
         public EventData<string> OnValueChanged = new EventData<string>("KSPShared.UGUI.TextField.OnValueChanged");
 
-        /// <summary>Émis à la validation (Entrée en mono-ligne, ou perte de focus).</summary>
+        /// <summary>Fired on submit (Enter in single-line, or loss of focus).</summary>
         public EventData<string> OnEndEdit = new EventData<string>("KSPShared.UGUI.TextField.OnEndEdit");
 
-        // Identifiant de verrou unique à cette instance, pour éviter toute collision entre champs.
+        // Lock id unique to this instance, to avoid any collision between fields.
         private string _lockId;
         private string LockId => _lockId ?? (_lockId = "KSPShared.TextField." + GetInstanceID());
 
-        // Vrai pendant SetText : l'affectation programmatique de .text déclenche onValueChanged de façon
-        // synchrone, ce drapeau permet de ne pas répercuter ce changement « non utilisateur » vers OnValueChanged.
+        // True during SetText: assigning .text programmatically fires onValueChanged synchronously, so
+        // this flag lets us not propagate that "non-user" change to OnValueChanged.
         private bool _suppressNotify = false;
 
         // ============================================
@@ -55,8 +55,8 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
                 _input.onSelect.RemoveListener(OnInputSelected);
                 _input.onDeselect.RemoveListener(OnInputDeselected);
             }
-            // Filet de sécurité : si le champ est détruit alors qu'il avait le focus, le verrou resterait
-            // sinon actif et figerait les commandes du jeu.
+            // Safety net: if the field is destroyed while focused, the lock would otherwise stay active
+            // and freeze the game controls.
             InputLockManager.RemoveControlLock(LockId);
         }
 
@@ -95,8 +95,8 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         }
 
         /// <summary>
-        /// Affecte le texte. N'émet PAS OnValueChanged (synchronisation depuis le modèle sans boucle
-        /// de rétroaction). Utiliser une saisie utilisateur pour déclencher l'événement.
+        /// Sets the text. Does NOT fire OnValueChanged (model-to-view sync without a feedback loop).
+        /// Use actual keyboard input to trigger the event.
         /// </summary>
         public void SetText(string text)
         {
