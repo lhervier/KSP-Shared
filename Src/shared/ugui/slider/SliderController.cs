@@ -21,7 +21,7 @@ namespace com.github.lhervier.ksp.shared.ugui.slider
         // ============================================
 
         private Slider _slider;
-        public SliderController Slider(Slider slider)
+        public SliderController WithSlider(Slider slider)
         {
             this._slider = slider;
             return this;

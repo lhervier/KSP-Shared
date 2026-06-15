@@ -16,28 +16,28 @@ namespace com.github.lhervier.ksp.shared.ugui.slider
         // ===================================================
 
         private Transform _parent;
-        public SliderBuilder Parent(Transform parent)
+        public SliderBuilder WithParent(Transform parent)
         {
             this._parent = parent;
             return this;
         }
 
         private float _min = 0f;
-        public SliderBuilder Min(float min)
+        public SliderBuilder WithMin(float min)
         {
             this._min = min;
             return this;
         }
 
         private float _max = 1f;
-        public SliderBuilder Max(float max)
+        public SliderBuilder WithMax(float max)
         {
             this._max = max;
             return this;
         }
 
         private float _value = 0f;
-        public SliderBuilder Value(float value)
+        public SliderBuilder WithValue(float value)
         {
             this._value = value;
             return this;
@@ -45,7 +45,7 @@ namespace com.github.lhervier.ksp.shared.ugui.slider
 
         // Constrain to integer values (step of 1). Otherwise the slider is continuous.
         private bool _wholeNumbers = false;
-        public SliderBuilder WholeNumbers(bool wholeNumbers)
+        public SliderBuilder WithWholeNumbersOnly(bool wholeNumbers)
         {
             this._wholeNumbers = wholeNumbers;
             return this;
@@ -131,7 +131,7 @@ namespace com.github.lhervier.ksp.shared.ugui.slider
 
             return rootGo
                 .AddComponent<SliderController>()
-                .Slider(slider);
+                .WithSlider(slider);
         }
 
         // Child anchored to full width, fixed height, vertically centered.
