@@ -79,9 +79,6 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             bg.color = Color.white;
             bg.raycastTarget = true;
 
-            // The field itself acts as the viewport; RectMask2D clips the overflowing text/placeholder.
-            inputGo.AddComponent<RectMask2D>();
-
             var input = inputGo.AddComponent<TMP_InputField>();
             input.lineType = _multiline ? TMP_InputField.LineType.MultiLineNewline : TMP_InputField.LineType.SingleLine;
 
@@ -89,15 +86,24 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             int padV = _multiline ? Mathf.RoundToInt(TextFieldPalette.PaddingV) : 0;
             TextAlignmentOptions align = _multiline ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Left;
 
-            var placeholder = NewFieldText(inputGo.transform, "Placeholder", padH, padV, align);
+            // Dedicated viewport inset by the padding. TMP_InputField assumes the text component fills
+            // its viewport exactly, so the padding lives on the viewport (not as text offsets): the
+            // caret-follow scrolling (which clamps to the viewport rect) and the on-blur position reset
+            // then both honor the padding. The RectMask2D clips the overflowing text/placeholder.
+            var viewport = NewFillingChild(inputGo.transform, "Viewport");
+            viewport.offsetMin = new Vector2(padH, padV);
+            viewport.offsetMax = new Vector2(-padH, -padV);
+            viewport.gameObject.AddComponent<RectMask2D>();
+
+            var placeholder = NewFieldText(viewport, "Placeholder", align);
             placeholder.fontStyle = FontStyles.Italic;
             placeholder.color = TextFieldPalette.PlaceholderColor;
             placeholder.text = _placeholder;
 
-            var text = NewFieldText(inputGo.transform, "Text", padH, padV, align);
+            var text = NewFieldText(viewport, "Text", align);
             text.color = TextFieldPalette.TextColor;
 
-            input.textViewport = inputGo.GetComponent<RectTransform>();
+            input.textViewport = viewport;
             input.textComponent = text;
             input.placeholder = placeholder;
             input.fontAsset = DefaultPalette.Font;
@@ -108,21 +114,28 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
                 .WithInputField(input);
         }
 
-        private TextMeshProUGUI NewFieldText(Transform parent, string objectName, int padH, int padV, TextAlignmentOptions align)
+        private TextMeshProUGUI NewFieldText(Transform parent, string objectName, TextAlignmentOptions align)
         {
-            var go = new GameObject(objectName, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(padH, padV);
-            rect.offsetMax = new Vector2(-padH, -padV);
+            var go = NewFillingChild(parent, objectName).gameObject;
             var label = UGUILabels.AddLabel(go);
             label.fontSize = _fontSize;
             label.alignment = align;
             label.richText = false;
             label.enableWordWrapping = _multiline;
             return label;
+        }
+
+        // Creates a child that stretches to fully fill its parent (zero offsets).
+        private static RectTransform NewFillingChild(Transform parent, string objectName)
+        {
+            var go = new GameObject(objectName, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            return rect;
         }
     }
 }
