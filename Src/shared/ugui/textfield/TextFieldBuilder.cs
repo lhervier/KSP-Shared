@@ -82,11 +82,6 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             var input = inputGo.AddComponent<TMP_InputField>();
             input.lineType = _multiline ? TMP_InputField.LineType.MultiLineNewline : TMP_InputField.LineType.SingleLine;
 
-            // Keep the text at its layout-driven position when the field loses focus: TMP otherwise resets
-            // it to a snapshot taken before the first layout pass (wrong for a runtime-built field), hiding
-            // the value until next focus. TextFieldController compensates the resulting caret behaviour.
-            input.resetOnDeActivation = false;
-
             int padH = Mathf.RoundToInt(TextFieldPalette.PaddingH);
             int padV = _multiline ? Mathf.RoundToInt(TextFieldPalette.PaddingV) : 0;
             TextAlignmentOptions align = _multiline ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Left;
@@ -121,12 +116,22 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
 
         private TextMeshProUGUI NewFieldText(Transform parent, string objectName, TextAlignmentOptions align)
         {
-            var go = NewFillingChild(parent, objectName).gameObject;
+            var go = new GameObject(objectName, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
             var label = UGUILabels.AddLabel(go);
             label.fontSize = _fontSize;
             label.alignment = align;
             label.richText = false;
             label.enableWordWrapping = _multiline;
+            // Make the label fill the viewport EXACTLY — and do it AFTER adding the TMP component: adding a
+            // TextMeshProUGUI resets the RectTransform's sizeDelta to TMP's default (~200x50), which on
+            // stretch anchors inflates the rect well beyond the viewport and pushes the text outside the
+            // field (the value then renders off to the left until TMP repositions it on focus).
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
             return label;
         }
 
