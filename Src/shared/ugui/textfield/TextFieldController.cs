@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -46,21 +47,24 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             }
         }
 
+        // Hides the caret whenever the field is not focused. The field keeps resetOnDeActivation off (so the
+        // value stays visible without focus, see TextFieldBuilder), which means TMP no longer clears the
+        // caret when unfocused and re-shows it on many internal paths (text changes, vertex/layout updates)
+        // that are hard to intercept one by one. So we enforce it every frame: deactivating the caret
+        // GameObject hides it for good — TMP keeps re-setting the caret mesh on its CanvasRenderer regardless
+        // of Graphic.enabled, but a deactivated GameObject renders nothing. TMP re-shows and blinks the caret
+        // on its own once it is active again on focus. The check is trivial and guarded; the cost is
+        // negligible. We never touch the text position: left alone, TMP keeps the value correctly placed.
         public void LateUpdate()
         {
-            // The field keeps resetOnDeActivation off so the value stays visible without focus (TMP would
-            // otherwise move the text to a position it snapshots before the first layout pass, i.e. wrong
-            // for a runtime-built field, hiding the value until next focus). The trade-off is that TMP no
-            // longer clears the caret when unfocused and re-shows it on any text/vertex update; rather than
-            // chase every such path, we just keep the caret's visibility matched to the focus state here.
-            // While focused, TMP's own blink keeps working (it toggles the caret mesh, not this flag).
-            if (_caret == null && _input != null && _input.textViewport != null)
+            if (_input == null) return;
+            if (_caret == null && _input.textViewport != null)
             {
                 _caret = _input.textViewport.GetComponentInChildren<TMP_SelectionCaret>(true);
             }
-            if (_caret != null && _input != null && _caret.enabled != _input.isFocused)
+            if (_caret != null && _caret.gameObject.activeSelf != _input.isFocused)
             {
-                _caret.enabled = _input.isFocused;
+                _caret.gameObject.SetActive(_input.isFocused);
             }
         }
         private TMP_SelectionCaret _caret;
@@ -129,6 +133,17 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             {
                 _suppressNotify = false;
             }
+            // A caller may set the value while the field is not laid out yet (e.g. refreshing fields from
+            // OnEnable, before the first layout pass). TMP then builds the text mesh against a zero-sized
+            // rect and leaves it invisible until the field is focused. Regenerate the mesh once layout has
+            // settled (next frame). Position is left untouched.
+            if (isActiveAndEnabled) StartCoroutine(RegenerateMeshNextFrame());
+        }
+
+        private IEnumerator RegenerateMeshNextFrame()
+        {
+            yield return null;
+            if (_input != null && _input.textComponent != null) _input.textComponent.ForceMeshUpdate();
         }
     }
 }
