@@ -16,7 +16,7 @@ namespace com.github.lhervier.ksp.shared
             {
                 return string.Empty;
             }
-            string tag = $"#LOC_{key}";
+            string tag = $"#LOC_{Constants.ModName}_{key}";
             try
             {
                 string formatted = Localizer.Format(tag, args);
