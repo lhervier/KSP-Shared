@@ -82,6 +82,12 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             var input = inputGo.AddComponent<TMP_InputField>();
             input.lineType = _multiline ? TMP_InputField.LineType.MultiLineNewline : TMP_InputField.LineType.SingleLine;
 
+            // TMP_InputField captures the text component's position at OnEnable (here at build time, before
+            // any layout pass, so it is wrong) and re-applies it on every deactivation (blur AND panel
+            // hide). That pushes the value out of view whenever the field is not focused. Disabling the
+            // reset keeps the text at its layout-driven position, so the value stays visible without focus.
+            input.resetOnDeActivation = false;
+
             int padH = Mathf.RoundToInt(TextFieldPalette.PaddingH);
             int padV = _multiline ? Mathf.RoundToInt(TextFieldPalette.PaddingV) : 0;
             TextAlignmentOptions align = _multiline ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Left;

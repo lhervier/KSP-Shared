@@ -46,6 +46,16 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             }
         }
 
+        public void OnEnable()
+        {
+            // The field keeps resetOnDeActivation off (so the value stays visible without focus); the side
+            // effect is that TMP no longer clears the caret mesh on blur, so we hide it ourselves. This runs
+            // on every activation (TMP — added before this component — has created the caret by now), so a
+            // freshly shown field starts caret-less; OnInputSelected re-shows it on focus. Start() is too
+            // early: TMP only creates the caret the first time it is enabled with a textComponent assigned.
+            if (_input != null && !_input.isFocused) SetCaretVisible(false);
+        }
+
         public void OnDestroy()
         {
             if (_input != null)
@@ -78,11 +88,26 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         private void OnInputSelected(string _)
         {
             InputLockManager.SetControlLock(ControlTypes.All, LockId);
+            SetCaretVisible(true);
         }
 
         private void OnInputDeselected(string _)
         {
             InputLockManager.RemoveControlLock(LockId);
+            SetCaretVisible(false);
+        }
+
+        // TMP creates the caret lazily as a TMP_SelectionCaret under the text viewport. Toggling its
+        // Graphic.enabled fully shows/hides the caret mesh; while focused, TMP's own blink still works
+        // (it empties the mesh on blink-off, independently of this enabled flag).
+        private TMP_SelectionCaret _caret;
+        private void SetCaretVisible(bool visible)
+        {
+            if (_caret == null && _input != null && _input.textViewport != null)
+            {
+                _caret = _input.textViewport.GetComponentInChildren<TMP_SelectionCaret>(true);
+            }
+            if (_caret != null) _caret.enabled = visible;
         }
 
         // ============================================
