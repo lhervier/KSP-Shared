@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using KSP.UI.Screens;
@@ -18,10 +19,35 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         // Index 2 is VesselType.Unknown; the stock code uses it as the out-of-range fallback.
         private const int UNKNOWN_INDEX = 2;
 
-        // Indexed by (int)VesselType. Holds the stock Sprite references as-is (the UI atlas
-        // they belong to is never unloaded, so the references stay valid for the whole run).
+        // Normalized table indexed by (int)VesselType. Holds the stock Sprite references as-is (the
+        // UI atlas they belong to is never unloaded, so the references stay valid for the whole run).
         private static Sprite[] _icons;
         private static bool _attempted;
+
+        // MapNode does NOT index its iconSprites[] by (int)VesselType: it remaps each type to a
+        // position in a larger map-icon atlas (MapNode.GetIcon's VesselType switch). We must apply
+        // that remap when reading from MapNode, otherwise e.g. Station (enum 9) would pick the wrong
+        // sprite. VesselIconSprite and KSCVesselMarker, by contrast, index directly by (int)VesselType.
+        private static readonly Dictionary<VesselType, int> MAP_NODE_INDEX = new Dictionary<VesselType, int>
+        {
+            { VesselType.Debris, 7 },
+            { VesselType.SpaceObject, 21 },
+            { VesselType.Probe, 18 },
+            { VesselType.Rover, 19 },
+            { VesselType.Lander, 14 },
+            { VesselType.Ship, 20 },
+            { VesselType.Station, 0 },
+            { VesselType.Base, 5 },
+            { VesselType.EVA, 13 },
+            { VesselType.Flag, 11 },
+            { VesselType.Plane, 23 },
+            { VesselType.Relay, 24 },
+            { VesselType.DeployedScienceController, 28 },
+            { VesselType.DeployedGroundPart, 29 },
+        };
+
+        // MapNode's '_ => 22' default branch (types absent from the table above).
+        private const int MAP_NODE_DEFAULT_INDEX = 22;
 
         /// <summary>The stock icon sprite for the given vessel type, or null when no source
         /// prefab could be found (caller should fall back to a text label).</summary>
@@ -79,9 +105,10 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         }
 
         // Lazy one-shot population, tried only once: if no source is loaded yet we keep _icons
-        // null and the callers fall back to text. Sources are tried cleanest first
-        // (VesselIconSprite has a table dedicated 1:1 to the enum), then the more scene-bound
-        // ones that are more likely to be in memory during flight.
+        // null and the callers fall back to text. Each source is normalized into a table indexed
+        // by (int)VesselType. Sources are tried cleanest first (VesselIconSprite has an array
+        // dedicated 1:1 to the enum, and KSCVesselMarker indexes the same way); MapNode is the
+        // scene-bound fallback most likely to be in memory during flight, but it needs its remap.
         private static void EnsureLoaded()
         {
             if (_attempted)
@@ -90,9 +117,24 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
             }
             _attempted = true;
 
-            _icons = ReadSpriteArray<VesselIconSprite>("vesselTypeIcons")
-                  ?? ReadSpriteArray<MapNode>("iconSprites")
-                  ?? ReadSpriteArray<KSCVesselMarker>("vesselIcons");
+            Sprite[] raw = ReadSpriteArray<VesselIconSprite>("vesselTypeIcons");
+            if (raw == null)
+            {
+                raw = ReadSpriteArray<KSCVesselMarker>("vesselIcons");
+            }
+            if (raw != null)
+            {
+                // Both arrays above are indexed directly by (int)VesselType.
+                _icons = Reindex(raw, DirectIndex);
+            }
+            else
+            {
+                raw = ReadSpriteArray<MapNode>("iconSprites");
+                if (raw != null)
+                {
+                    _icons = Reindex(raw, MapNodeIndex);
+                }
+            }
 
             if (_icons == null)
             {
@@ -100,8 +142,47 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
             }
             else
             {
-                LOGGER.LogDebug("Loaded " + _icons.Length + " stock vessel-type icons.");
+                LOGGER.LogDebug("Loaded stock vessel-type icons.");
             }
+        }
+
+        // The raw-array index of a vessel type for a source indexed 1:1 by the enum.
+        private static int DirectIndex(VesselType type)
+        {
+            return (int)type;
+        }
+
+        // The raw-array index of a vessel type within MapNode.iconSprites (its remap table).
+        private static int MapNodeIndex(VesselType type)
+        {
+            int idx;
+            return MAP_NODE_INDEX.TryGetValue(type, out idx) ? idx : MAP_NODE_DEFAULT_INDEX;
+        }
+
+        // Builds a table indexed by (int)VesselType, pulling each entry from the source array
+        // through the given index mapping. Entries whose mapped index is out of the source's
+        // range are left null (Get falls back to Unknown).
+        private static Sprite[] Reindex(Sprite[] raw, Func<VesselType, int> indexOf)
+        {
+            int max = 0;
+            foreach (VesselType type in Enum.GetValues(typeof(VesselType)))
+            {
+                if ((int)type > max)
+                {
+                    max = (int)type;
+                }
+            }
+
+            var table = new Sprite[max + 1];
+            foreach (VesselType type in Enum.GetValues(typeof(VesselType)))
+            {
+                int src = indexOf(type);
+                if (src >= 0 && src < raw.Length)
+                {
+                    table[(int)type] = raw[src];
+                }
+            }
+            return table;
         }
 
         // Returns the named Sprite[] field of the first loaded instance of T whose array is
