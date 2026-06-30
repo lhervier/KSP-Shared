@@ -136,13 +136,20 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             // A caller may set the value while the field is not laid out yet (e.g. refreshing fields from
             // OnEnable, before the first layout pass). TMP then builds the text mesh against a zero-sized
             // rect and leaves it invisible until the field is focused. Regenerate the mesh once layout has
-            // settled (next frame). Position is left untouched.
-            if (isActiveAndEnabled) StartCoroutine(RegenerateMeshNextFrame());
+            // settled. Position is left untouched.
+            if (isActiveAndEnabled) StartCoroutine(RegenerateMeshWhenLaidOut());
         }
 
-        private IEnumerator RegenerateMeshNextFrame()
+        private IEnumerator RegenerateMeshWhenLaidOut()
         {
-            yield return null;
+            // On the very first show the nested layouts / ContentSizeFitter can take more than one frame to
+            // settle, so wait until the field actually has a size (capped, never spin forever).
+            for (int i = 0; i < 10; i++)
+            {
+                yield return null;
+                if (_input == null || _input.textViewport == null) yield break;
+                if (_input.textViewport.rect.width > 0f) break;
+            }
             if (_input != null && _input.textComponent != null) _input.textComponent.ForceMeshUpdate();
         }
     }
