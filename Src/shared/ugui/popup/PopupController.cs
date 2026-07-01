@@ -59,6 +59,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             _popupDialog?.onDestroy.AddListener(OnPopupDestroyed);
             GameEvents.onLevelWasLoaded.Add(OnSceneLoaded);
+            GameEvents.onGameSceneLoadRequested.Add(OnSceneUnloading);
 
             if( this._closeButtonController != null )
             {
@@ -80,6 +81,7 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // owner-driven Dismiss and KSP destroying the popup itself), and in both the popup is
             // already being destroyed — dismissing again here would re-enter the teardown.
             GameEvents.onLevelWasLoaded.Remove(OnSceneLoaded);
+            GameEvents.onGameSceneLoadRequested.Remove(OnSceneUnloading);
             _popupDialog?.onDestroy.RemoveListener(OnPopupDestroyed);
         }
 
@@ -115,6 +117,17 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         private void OnSceneLoaded(GameScenes scene)
         {
             this.RestoreInteractivity();
+        }
+
+        /// <summary>
+        /// Called when KSP is about to leave the current scene (quit to menu, scene switch…), while the
+        /// window transform is still alive. Grabs the dragged position so it survives a scene change
+        /// even if the window was never closed — KSP's PopupDialog exposes no drag/move event, so this
+        /// is our last chance to persist a position the user changed by dragging.
+        /// </summary>
+        private void OnSceneUnloading(GameScenes scene)
+        {
+            CaptureWindowPosition();
         }
 
         // =====================
