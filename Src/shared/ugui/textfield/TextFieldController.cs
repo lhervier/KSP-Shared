@@ -60,6 +60,14 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             InputLockManager.RemoveControlLock(LockId);
         }
 
+        // Unity lifecycle callback (invoked automatically on deactivation, never called by consumers).
+        public void OnDisable()
+        {
+            // Safety net: a focused field getting deactivated (e.g. its host popup closes) may not
+            // receive onDeselect, which would leave the keyboard lock active and freeze the controls.
+            InputLockManager.RemoveControlLock(LockId);
+        }
+
         // ============================================
         // Methods bound to events
         // ============================================
@@ -88,6 +96,12 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
         // ============================================
         // Public API
         // ============================================
+
+        /// <summary>Gives the keyboard focus to the field, opening it for typing.</summary>
+        public void Activate()
+        {
+            if (_input != null) _input.ActivateInputField();
+        }
 
         public string GetText()
         {
