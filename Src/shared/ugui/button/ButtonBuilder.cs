@@ -129,7 +129,13 @@ namespace com.github.lhervier.ksp.shared.ugui.button
             colors.colorMultiplier = 1f;
             colors.fadeDuration = 0.1f;
             button.colors = colors;
-            
+
+            // Paint the resting color right now. AddComponent<Button> already ran the Selectable's first
+            // state transition with the DEFAULT ColorBlock (white normalColor) — our colors above only take
+            // effect on the next transition (ButtonController.Start, next frame). Without this, a button
+            // created in view (e.g. a rebuilt panel) flashes white for one frame. Instant, no fade.
+            image.CrossFadeColor(_backgroundColor, 0f, true, true);
+
             // CanvasGroup applies a global alpha to the button (background + text + future children),
             // and also blocks raycasts when disabled — matches the mockup's .ka:disabled { opacity: .25 }.
             var canvasGroup = buttonGo.AddComponent<CanvasGroup>();
