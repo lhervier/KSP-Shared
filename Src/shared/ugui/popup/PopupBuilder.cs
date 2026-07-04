@@ -81,6 +81,15 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
+        // Whether pressing Escape closes the window. Defaults to false: KSP's native PopupDialog closes
+        // on Escape, and we suppress that unless a mod explicitly opts back in.
+        private bool _closeOnEscape = false;
+        public PopupBuilder<T, C, O> WithCloseOnEscape(bool value)
+        {
+            this._closeOnEscape = value;
+            return this;
+        }
+
         // The single settings instance, shared between the controller (open state) and each spawned
         // window (position). Created at Build, read by every Spawn.
         private PopupSettings _settings;
@@ -184,7 +193,16 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             {
                 return null;
             }
-            
+
+            // KSP's PopupDialog.Update() closes the window on Escape (Input.GetKeyUp). Disabling the
+            // component suppresses its Update/FixedUpdate/LateUpdate: for this popup the DialogGUI content
+            // is an empty shell (a DialogGUIBox around an empty layout), so those are no-ops anyway, while
+            // the drag panel and our own uGUI tree keep working independently.
+            if( !_closeOnEscape )
+            {
+                popupDialog.enabled = false;
+            }
+
             // Remove KSP default title
             var title = popupDialog.popupWindow.transform.Find("Title");
             title?.gameObject.SetActive(false);
