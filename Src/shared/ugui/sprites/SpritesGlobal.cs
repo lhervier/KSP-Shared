@@ -36,20 +36,12 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
             }
         }
 
+        // Kept as an alias for callers that predate the cache. Delegates to Border so every
+        // fill/border/thickness combination is generated once and shared, instead of a fresh
+        // (uncached) Texture2D per call.
         public static Sprite MakeChipSprite(Color fill, Color border, int thickness)
         {
-            int size = 2 * thickness + 1;
-            var tex = TextureUtils.MakeBorderTexture(fill, border, thickness);
-            var sprite = Sprite.Create(
-                tex,
-                new Rect(0f, 0f, size, size),
-                new Vector2(0.5f, 0.5f),
-                100f,
-                0u,
-                SpriteMeshType.FullRect,
-                new Vector4(thickness, thickness, thickness, thickness));
-            sprite.hideFlags = HideFlags.HideAndDontSave;
-            return sprite;
+            return Border(fill, border, thickness);
         }
 
         public static Sprite Border(Color fill, Color border, int thickness)
