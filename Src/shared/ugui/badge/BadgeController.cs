@@ -48,9 +48,6 @@ namespace com.github.lhervier.ksp.shared.ugui.badge
         // Public API
         // =====================================================
 
-        /// <summary>The badge label, for callers that keep updating its text (e.g. a live counter).</summary>
-        public TextMeshProUGUI TextComponent { get { return _label; } }
-
         public void SetText(string text)
         {
             if (_label != null) _label.text = text;
