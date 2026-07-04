@@ -7,9 +7,10 @@ using com.github.lhervier.ksp.shared.ugui.button;
 
 namespace com.github.lhervier.ksp.shared.ugui.popup
 {
-    public class PopupBuilder<T, C> : IUGUIBuilder<PopupController> 
+    public class PopupBuilder<T, C, O> : IUGUIBuilder<PopupController> 
         where T : MonoBehaviour
         where C : MonoBehaviour
+        where O : MonoBehaviour
     {
         private static ModLogger LOGGER = new ModLogger("PopupBuilder");
 
@@ -18,49 +19,56 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         // ===============================================
 
         private string _popupID = null;
-        public PopupBuilder<T, C> WithPopupID(string id)
+        public PopupBuilder<T, C, O> WithPopupID(string id)
         {
             this._popupID = id;
             return this;
         }
 
         private string _title = string.Empty;
-        public PopupBuilder<T, C> WithTitle(string title)
+        public PopupBuilder<T, C, O> WithTitle(string title)
         {
             this._title = title;
             return this;
         }
 
         private Sprite _icon = null;
-        public PopupBuilder<T, C> WithIcon(Sprite icon)
+        public PopupBuilder<T, C, O> WithIcon(Sprite icon)
         {
             this._icon = icon;
             return this;
         }
 
         private IUGUIBuilder<T> _titleBarBuilder;
-        public PopupBuilder<T, C> WithTitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
+        public PopupBuilder<T, C, O> WithTitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
         {
             this._titleBarBuilder = titleBarBuilder;
             return this;
         }
 
         private IUGUIBuilder<C> _contentBuilder;
-        public PopupBuilder<T, C> WithContentBuilder(IUGUIBuilder<C> contentBuilder)
+        public PopupBuilder<T, C, O> WithContentBuilder(IUGUIBuilder<C> contentBuilder)
         {
             this._contentBuilder = contentBuilder;
             return this;
         }
 
+        private IUGUIBuilder<O> _overlayBuilder;
+        public PopupBuilder<T, C, O> WithOverlayBuilder(IUGUIBuilder<O> overlayBuilder)
+        {
+            this._overlayBuilder = overlayBuilder;
+            return this;
+        }
+
         private Vector2 _size;
         private bool _hasSize = false;
-        public PopupBuilder<T, C> WithSize(Vector2 size)
+        public PopupBuilder<T, C, O> WithSize(Vector2 size)
         {
             this._size = size;
             this._hasSize = true;
             return this;
         }
-        public PopupBuilder<T, C> WithoutSize()
+        public PopupBuilder<T, C, O> WithoutSize()
         {
             this._hasSize = false;
             return this;
@@ -201,7 +209,24 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             // Add the title bar
             GameObject titleBarGo = this.CreateTitleBar(out ButtonController closeButtonController);
             titleBarGo.transform.SetParent(popupDialog.popupWindow.transform, false);
-            
+
+            // Window-level overlays (menus, modal internal popups), grafted last so they draw and receive
+            // clicks above both the content host and the title bar. Unlike the encased content host, they
+            // stretch over the WHOLE window (title bar included): the builder only assembles the overlays on
+            // its root, we own its placement — ignoreLayout to escape the window's VerticalLayoutGroup, then
+            // stretched to fill the window. This keeps that boilerplate out of every mod's overlay builder.
+            if( this._overlayBuilder != null )
+            {
+                O overlayController = this._overlayBuilder.Build();
+                var overlayRect = overlayController.GetComponent<RectTransform>();
+                overlayRect.SetParent(popupDialog.popupWindow.transform, false);
+                overlayController.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+                overlayRect.anchorMin = Vector2.zero;
+                overlayRect.anchorMax = Vector2.one;
+                overlayRect.offsetMin = Vector2.zero;
+                overlayRect.offsetMax = Vector2.zero;
+            }
+
             PopupController popupController = popupDialog.popupWindow
                 .AddComponent<PopupController>()
                 .WithPopupDialog(popupDialog)
