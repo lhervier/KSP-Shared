@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using com.github.lhervier.ksp.shared.ugui.button;
+using com.github.lhervier.ksp.bookmarksmod;
 
 namespace com.github.lhervier.ksp.shared.ugui.popup
 {
@@ -38,17 +39,10 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
-        private Vector2 _position;
-        private bool _hasPosition;
-        public PopupController WithPosition(Vector2 pos)
+        private PopupSettings _settings;
+        public PopupController WithSettings(PopupSettings settings)
         {
-            this._position = pos;
-            this._hasPosition = true;
-            return this;
-        }
-        public PopupController WithoutPosition()
-        {
-            this._hasPosition = false;
+            this._settings = settings;
             return this;
         }
 
@@ -158,9 +152,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             // Wait one frame so KSP's layout pass (which re-applies the spawn position) has settled.
             yield return null;
-            if( _hasPosition )
+            if( _settings.HasWindowPosition )
             {
-                SetPosition(_position);
+                SetPosition(_settings.WindowPosition);
             }
             Reveal();
         }
@@ -216,8 +210,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         {
             if (_popupDialog != null && _popupDialog.RTrf != null)
             {
-                _position = _popupDialog.RTrf.localPosition;
-                OnPositionCaptured.Fire(_position);
+                _settings.SetWindowPosition(_popupDialog.RTrf.localPosition);
+                _settings.Save();
+                OnPositionCaptured.Fire(_settings.WindowPosition);
             }
         }
     }

@@ -11,11 +11,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         where T : MonoBehaviour
         where C : MonoBehaviour
     {
+        private static ModLogger LOGGER = new ModLogger("PopupBuilder");
+
         // ===============================================
         // Build parameters
         // ===============================================
 
-        private string _popupID = "Popup";
+        private string _popupID = null;
         public PopupBuilder<T, C> WithPopupID(string id)
         {
             this._popupID = id;
@@ -50,20 +52,6 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
-        private Vector2 _position;
-        private bool _hasPosition = false;
-        public PopupBuilder<T, C> WithPosition(Vector2 position)
-        {
-            this._position = position;
-            this._hasPosition = true;
-            return this;
-        }
-        public PopupBuilder<T, C> WithoutPosition()
-        {
-            this._hasPosition = false;
-            return this;
-        }
-
         private Vector2 _size;
         private bool _hasSize = false;
         public PopupBuilder<T, C> WithSize(Vector2 size)
@@ -88,13 +76,22 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
         /// </summary>
         public PopupController Build()
         {
+            if( this._popupID == null )
+            {
+                LOGGER.LogError("Unable to create a popup without a popup ID");
+                return null;
+            }
+
+            // Create the settings
+            PopupSettings settings = new PopupSettings(this._popupID);
+
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
             float positionX;
             float positionY;
-            if( _hasPosition )
+            if( settings.HasWindowPosition )
             {
-                positionX = _position.x;
-                positionY = _position.y;
+                positionX = settings.WindowPosition.x;
+                positionY = settings.WindowPosition.y;
             }
             else
             {
@@ -209,11 +206,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 .AddComponent<PopupController>()
                 .WithPopupDialog(popupDialog)
                 .WithCanvasGroup(canvasGroup)
-                .WithCloseButtonController(closeButtonController);
-            if( _hasPosition )
-            {
-                popupController = popupController.WithPosition(_position);
-            }
+                .WithCloseButtonController(closeButtonController)
+                .WithSettings(settings);
             return popupController;
         }
 
