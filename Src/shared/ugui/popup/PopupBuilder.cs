@@ -74,13 +74,26 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
+        private GameObject _host = null;
+        public PopupBuilder<T, C, O> WithHost(GameObject host)
+        {
+            this._host = host;
+            return this;
+        }
+
+        // The single settings instance, shared between the controller (open state) and each spawned
+        // window (position). Created at Build, read by every Spawn.
+        private PopupSettings _settings;
+
         // =============================================
         // Builder
         // =============================================
 
         /// <summary>
-        /// Spawn the cheat-sheet popup window and return its controller, or null if KSP failed to spawn
-        /// it. The caller drives the window through the returned controller.
+        /// Create the persistent popup controller on the host GameObject and return it, or null on bad
+        /// input. The window itself is NOT spawned here: the controller spawns it lazily on the first
+        /// Show(), and re-spawns it after KSP destroys it. The caller drives everything through the
+        /// returned controller (Show/Hide/RestoreState/OnOpenChanged).
         /// </summary>
         public PopupController Build()
         {
@@ -89,9 +102,31 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 LOGGER.LogError("Unable to create a popup without a popup ID");
                 return null;
             }
+            if( this._host == null )
+            {
+                LOGGER.LogError("Unable to create a popup without a host GameObject");
+                return null;
+            }
 
-            // Create the settings
-            PopupSettings settings = new PopupSettings(this._popupID);
+            // Single settings instance shared with every spawned window (see field comment).
+            this._settings = new PopupSettings(this._popupID);
+
+            // The controller lives on the mod's host GameObject so it survives KSP destroying the window,
+            // and drives it through the injected spawn function.
+            return this._host
+                .AddComponent<PopupController>()
+                .WithSettings(this._settings)
+                .WithSpawnResultProducer(this.Spawn);
+        }
+
+        /// <summary>
+        /// Spawn a fresh window instance (PopupDialog + chrome + title bar + content + overlays) and return
+        /// its pieces, or null if KSP failed to spawn it. Invoked lazily by the controller on each (re)open,
+        /// so the sub-builders are re-run to produce a brand-new visual tree every time.
+        /// </summary>
+        internal PopupSpawnResult Spawn()
+        {
+            PopupSettings settings = this._settings;
 
             // Creates a ultra minimal MultiOptionDialog. We will not use it.
             float positionX;
@@ -227,13 +262,14 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
                 overlayRect.offsetMax = Vector2.zero;
             }
 
-            PopupController popupController = popupDialog.popupWindow
-                .AddComponent<PopupController>()
-                .WithPopupDialog(popupDialog)
-                .WithCanvasGroup(canvasGroup)
-                .WithCloseButtonController(closeButtonController)
-                .WithSettings(settings);
-            return popupController;
+            // Hand the pieces back to the controller, which owns the lifecycle. Note: unlike before, no
+            // component is added onto the window — the controller lives on the mod's host GameObject.
+            return new PopupSpawnResult
+            {
+                PopupDialog = popupDialog,
+                CanvasGroup = canvasGroup,
+                CloseButtonController = closeButtonController,
+            };
         }
 
         // =================================================

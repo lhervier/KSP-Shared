@@ -19,13 +19,22 @@ namespace com.github.lhervier.ksp.shared.ugui.popup {
         
         private string _popupID;
 
-        /// <summary>Position (localPosition) mémorisée de la fenêtre, si elle a déjà été capturée.</summary>
+        /// <summary>Memorized window position (localPosition), if it has already been captured.</summary>
         public bool HasWindowPosition { get; private set; }
         public Vector2 WindowPosition { get; private set; }
 
         public void SetWindowPosition(Vector2 position) {
             WindowPosition = position;
             HasWindowPosition = true;
+        }
+
+        /// <summary>Memorized open/closed state of the window, if it has already been captured.</summary>
+        public bool HasWindowVisible { get; private set; }
+        public bool WindowVisible { get; private set; }
+
+        public void SetWindowVisible(bool visible) {
+            WindowVisible = visible;
+            HasWindowVisible = true;
         }
 
         public PopupSettings(string popupID) {
@@ -46,6 +55,11 @@ namespace com.github.lhervier.ksp.shared.ugui.popup {
                     WindowPosition = new Vector2(x, y);
                     HasWindowPosition = true;
                 }
+                if (node.HasValue("windowVisible")
+                    && bool.TryParse(node.GetValue("windowVisible"), out bool windowVisible)) {
+                    WindowVisible = windowVisible;
+                    HasWindowVisible = true;
+                }
             } catch (Exception e) {
                 LOGGER.LogError($"Error loading settings: {e.Message}");
             }
@@ -58,6 +72,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup {
                 if (HasWindowPosition) {
                     node.AddValue("windowX", WindowPosition.x.ToString(CultureInfo.InvariantCulture));
                     node.AddValue("windowY", WindowPosition.y.ToString(CultureInfo.InvariantCulture));
+                }
+                if (HasWindowVisible) {
+                    node.AddValue("windowVisible", WindowVisible.ToString());
                 }
                 
                 string path = GetSettingsPath();
