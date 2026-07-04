@@ -62,6 +62,13 @@ namespace com.github.lhervier.ksp.shared.ugui.badge
             return this;
         }
 
+        private FontStyles _fontStyle = FontStyles.Normal;
+        public BadgeBuilder WithFontStyle(FontStyles fontStyle)
+        {
+            this._fontStyle = fontStyle;
+            return this;
+        }
+
         private float _paddingH = 6f;
         private int _paddingV = 2;
         public BadgeBuilder WithPadding(float paddingH, int paddingV)
@@ -196,6 +203,7 @@ namespace com.github.lhervier.ksp.shared.ugui.badge
             var label = UGUILabels.AddLabel(labelGo);
             label.text = _text;
             label.fontSize = _fontSize;
+            label.fontStyle = _fontStyle;
             label.color = _textColor;
             label.alignment = TextAlignmentOptions.Center;
             return label;
