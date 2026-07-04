@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using com.github.lhervier.ksp.shared.ugui.button;
-using com.github.lhervier.ksp.bookmarksmod;
 
 namespace com.github.lhervier.ksp.shared.ugui.popup
 {
