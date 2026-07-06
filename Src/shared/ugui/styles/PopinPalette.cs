@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace com.github.lhervier.ksp.shared.ugui.styles
 {
-    public static class InternalPopupPalette
+    public static class PopinPalette
     {
         // Inset from the parent edges (keeps the host window's 1px chrome border visible behind the dim layer).
         public const float BorderThickness = 1f;
