@@ -95,6 +95,16 @@ if errorlevel 1 (
     exit /b 1
 )
 
+REM Compile the flat "key = value" sources (mod + shared common keys) into the KSP
+REM Localization\<lang>.cfg files, prefixed with #LOC_%MOD_NAME%_. Uses powershell
+REM (already required below) because cmd echo mangles < > ( ) present in the values.
+echo Generating localization cfg files
+powershell -NoProfile -ExecutionPolicy Bypass -File "KSP-Shared\tools\gen-localization.ps1" -ModName "%MOD_NAME%" -SharedDir "KSP-Shared\Localization" -StageDir "%STAGE%\Localization"
+if errorlevel 1 (
+    echo ERROR: Failed to generate the localization cfg files
+    exit /b 1
+)
+
 echo Zipping Mod
 powershell -NoProfile -Command "Compress-Archive -Path '%STAGE%\*' -DestinationPath 'Release\%MOD_NAME%.zip' -Force"
 if errorlevel 1 (

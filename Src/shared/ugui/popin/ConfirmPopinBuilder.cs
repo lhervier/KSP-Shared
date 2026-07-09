@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using com.github.lhervier.ksp.shared.ugui.styles;
+using com.github.lhervier.ksp.shared;
 
 namespace com.github.lhervier.ksp.shared.ugui.popin
 {
@@ -40,7 +41,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popin
             return this;
         }
 
-        private string _okLabel = string.Empty;
+        // null = not set: fall back to the shared "commonOk" key at Build time.
+        private string _okLabel = null;
         public ConfirmPopinBuilder WithOkLabel(string okLabel)
         {
             this._okLabel = okLabel;
@@ -61,7 +63,8 @@ namespace com.github.lhervier.ksp.shared.ugui.popin
             return this;
         }
 
-        private string _cancelLabel = string.Empty;
+        // null = not set: fall back to the shared "commonCancel" key at Build time.
+        private string _cancelLabel = null;
         public ConfirmPopinBuilder WithCancelLabel(string cancelLabel)
         {
             this._cancelLabel = cancelLabel;
@@ -75,13 +78,18 @@ namespace com.github.lhervier.ksp.shared.ugui.popin
             // at Start, by which point Build has returned and the field below is assigned.
             ConfirmPopinController controller = null;
 
+            // Unset labels fall back to the shared common keys, resolved for the current mod
+            // (ModLocalization prefixes with #LOC_<ModName>_).
+            string okLabel = _okLabel ?? ModLocalization.GetString("commonOk");
+            string cancelLabel = _cancelLabel ?? ModLocalization.GetString("commonCancel");
+
             var popinBuilder = new ButtonBarPopinBuilder<ConfirmContentController>()
                 .WithParent(_parent)
                 .WithTitle(_title)
                 .WithTitleColor(_titleColor)
                 .WithContentBuilder(new ConfirmContentBuilder())
-                .WithButton(_cancelLabel, () => controller.Cancel())
-                .WithButton(_okLabel, () => controller.Confirm(), _okStyle);
+                .WithButton(cancelLabel, () => controller.Cancel())
+                .WithButton(okLabel, () => controller.Confirm(), _okStyle);
 
             PopinController popin = popinBuilder.Build();
             ConfirmContentController content = popinBuilder.ContentController;

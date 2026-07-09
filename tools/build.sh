@@ -78,6 +78,11 @@ cp -a KSP-Shared/GameData/Textures/. "$STAGE/Textures/"
 echo "Copying the mod DLL"
 cp -v "Output/bin/$MOD_NAME.dll" "$STAGE/"
 
+# Compile the flat "key = value" sources (mod + shared common keys) into the KSP
+# Localization/<lang>.cfg files, prefixed with #LOC_<MOD_NAME>_.
+echo "Generating localization cfg files"
+bash KSP-Shared/tools/gen-localization.sh "$MOD_NAME" "KSP-Shared/Localization" "$STAGE/Localization"
+
 echo "Creating the archive"
 (
     cd "$STAGE"
