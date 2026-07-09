@@ -20,5 +20,30 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
 
         // Title.
         public const int TitleFontSize = 11;
+
+        // Message (content of a ConfirmPopin).
+        public const int MessageFontSize = 13;
+        public static readonly Color MessageColor = Utils.Rgb(204, 204, 204);  // #ccc
+
+        // Footer button bar.
+        public const float FooterSpacing = 8f;   // gap between buttons
+        public const float ButtonHeight = 28f;
+        public const float ButtonPaddingH = 14f;
+        public const int ButtonFontSize = 12;
+
+        // Normal footer button (e.g. Cancel).
+        public static readonly Color ButtonBgColor = Utils.Rgb(56, 56, 56);      // #383838
+        public static readonly Color ButtonHoverColor = Utils.Rgb(72, 72, 72);   // #484848
+        public static readonly Color ButtonTextColor = Utils.Rgb(187, 187, 187); // #bbb
+
+        // Confirm footer button (positive action, e.g. Save). No hover tint (hover == background).
+        public static readonly Color ButtonConfirmBgColor = Utils.Rgba(141, 190, 69, 0.12f);
+        public static readonly Color ButtonConfirmHoverColor = Utils.Rgba(141, 190, 69, 0.12f);
+        public static readonly Color ButtonConfirmTextColor = Utils.Rgb(141, 190, 69);  // #8dbe45
+
+        // Alert footer button (destructive action, e.g. Remove). No hover tint (hover == background).
+        public static readonly Color ButtonAlertBgColor = Utils.Rgba(192, 89, 79, 0.12f);
+        public static readonly Color ButtonAlertHoverColor = Utils.Rgba(192, 89, 79, 0.12f);
+        public static readonly Color ButtonAlertTextColor = Utils.Rgb(192, 89, 79);  // #c0594f
     }
 }
