@@ -3,8 +3,9 @@
 # Generic mod build (bash). Produces Release/$MOD_NAME.zip.
 #
 # Invoked from a mod root by the mod's thin build.sh wrapper, which exports:
-#   MOD_NAME  the mod folder / DLL / zip base name (e.g. VesselBookmarkMod)
-#   MOD_SLN   the solution file to build (e.g. VesselBookmark.sln)
+#   MOD_CSPROJ  the project to build (e.g. VesselBookmarkMod.csproj). The mod name
+#               (DLL / folder / zip base name) is derived from its <AssemblyName>,
+#               so the mod name has a single source of truth: the csproj.
 #
 # Convention: the packaged payload is everything under GameData/$MOD_NAME/ (minus
 # PluginData/, which is runtime data), plus the shared TMP sprite textures and the
@@ -37,16 +38,22 @@ detect_ksp_data_dir() {
     echo "Using KSP_DATA_DIR: $KSP_DATA_DIR"
 }
 
-[[ -n "${MOD_NAME:-}" ]] || die "MOD_NAME is not set (the wrapper must export it)"
-[[ -n "${MOD_SLN:-}" ]] || die "MOD_SLN is not set (the wrapper must export it)"
-
-echo "========="
-echo "Building $MOD_NAME"
-echo "========="
+[[ -n "${MOD_CSPROJ:-}" ]] || die "MOD_CSPROJ is not set (the wrapper must export it)"
+[[ -f "$MOD_CSPROJ" ]] || die "MOD_CSPROJ not found: $MOD_CSPROJ"
 
 require_command dotnet
 require_command zip
 detect_ksp_data_dir
+
+# Derive the mod name from the project's <AssemblyName> (single source of truth):
+# -getProperty evaluates the property without compiling, so it is available up front
+# to name the stage folder, the DLL, the zip and the localization prefix below.
+MOD_NAME="$(dotnet msbuild "$MOD_CSPROJ" -getProperty:AssemblyName -nologo | tr -d '\r')"
+[[ -n "$MOD_NAME" ]] || die "Failed to read AssemblyName from $MOD_CSPROJ"
+
+echo "========="
+echo "Building $MOD_NAME"
+echo "========="
 
 MSBUILD_PROPS=(-p:KSPDIR="$KSPDIR" -p:KSP_DATA_DIR="$KSP_DATA_DIR")
 STAGE="Release/$MOD_NAME"
@@ -58,10 +65,10 @@ echo "Creating stage folder"
 mkdir -p "$STAGE"
 
 echo "Restoring NuGet packages"
-dotnet restore "$MOD_SLN" "${MSBUILD_PROPS[@]}"
+dotnet restore "$MOD_CSPROJ" "${MSBUILD_PROPS[@]}"
 
 echo "Building the mod DLL (.NET Framework 4.7.2)"
-dotnet build "$MOD_SLN" "${MSBUILD_PROPS[@]}" --no-restore
+dotnet build "$MOD_CSPROJ" "${MSBUILD_PROPS[@]}" --no-restore
 
 # Payload = the whole GameData/$MOD_NAME tree, minus PluginData (runtime config,
 # never shipped).

@@ -3,20 +3,21 @@ REM
 REM Generic mod build (cmd). Produces Release\%MOD_NAME%.zip.
 REM
 REM Invoked from a mod root by the mod's thin build.bat wrapper, which sets:
-REM   MOD_NAME  the mod folder / DLL / zip base name (e.g. VesselBookmarkMod)
-REM   MOD_SLN   the solution file to build (e.g. VesselBookmark.sln)
+REM   MOD_CSPROJ  the project to build (e.g. VesselBookmarkMod.csproj). The mod name
+REM               (DLL / folder / zip base name) is derived from its <AssemblyName>,
+REM               so the mod name has a single source of truth: the csproj.
 REM
 REM Convention: the packaged payload is everything under GameData\%MOD_NAME%\
 REM (minus PluginData\, which is runtime data), plus the shared TMP sprite
 REM textures and the built DLL.
 setlocal enabledelayedexpansion
 
-if not defined MOD_NAME (
-    echo ERROR: MOD_NAME is not set ^(the wrapper must set it^)
+if not defined MOD_CSPROJ (
+    echo ERROR: MOD_CSPROJ is not set ^(the wrapper must set it^)
     exit /b 1
 )
-if not defined MOD_SLN (
-    echo ERROR: MOD_SLN is not set ^(the wrapper must set it^)
+if not exist "%MOD_CSPROJ%" (
+    echo ERROR: MOD_CSPROJ not found: %MOD_CSPROJ%
     exit /b 1
 )
 
@@ -45,6 +46,17 @@ if exist "!KSPDIR!\KSP_x64_Data\Managed\Assembly-CSharp.dll" (
 echo Using KSPDIR: !KSPDIR!
 echo Using KSP_DATA_DIR: !KSP_DATA_DIR!
 
+REM Derive the mod name from the project's <AssemblyName> (single source of truth):
+REM -getProperty evaluates the property without compiling, so it is available up front
+REM to name the stage folder, the DLL, the zip and the localization prefix below.
+set "MOD_NAME="
+for /f "usebackq delims=" %%i in (`dotnet msbuild "!MOD_CSPROJ!" -getProperty:AssemblyName -nologo`) do set "MOD_NAME=%%i"
+if not defined MOD_NAME (
+    echo ERROR: Failed to read AssemblyName from !MOD_CSPROJ!
+    exit /b 1
+)
+echo Using MOD_NAME: !MOD_NAME!
+
 set "STAGE=Release\%MOD_NAME%"
 
 echo.
@@ -63,7 +75,7 @@ if errorlevel 1 (
 )
 
 echo Building Mod DLL
-dotnet build "%MOD_SLN%" -p:KSPDIR="!KSPDIR!" -p:KSP_DATA_DIR="!KSP_DATA_DIR!"
+dotnet build "%MOD_CSPROJ%" -p:KSPDIR="!KSPDIR!" -p:KSP_DATA_DIR="!KSP_DATA_DIR!"
 if errorlevel 1 (
     echo ERROR: Failed to build the Mod DLL
     exit /b 1

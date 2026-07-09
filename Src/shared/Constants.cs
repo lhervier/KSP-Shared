@@ -8,7 +8,10 @@ namespace com.github.lhervier.ksp.shared
         {
             get
             {
-                return Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyTitleAttribute>().Title;
+                // The shared sources are compiled into each mod's own DLL, so the
+                // executing assembly IS the mod assembly; its simple name is the
+                // csproj <AssemblyName> - the single source of truth for the mod name.
+                return Assembly.GetExecutingAssembly().GetName().Name;
             }
         }
     }
