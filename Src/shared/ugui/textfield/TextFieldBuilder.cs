@@ -8,8 +8,10 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
 {
     /// <summary>
     /// Builds a reusable text field (a styled TMP_InputField: bordered background, clipped viewport,
-    /// text + placeholder). Single-line by default, multi-line via Multiline(true). The KSP keyboard
-    /// lock is handled by the returned TextFieldController. Default colors/metrics: TextFieldPalette.
+    /// text + placeholder). Single-line by default, multi-line via Multiline(true). Optionally
+    /// (single-line only) a clear button at the right end of the field, shown only while the field
+    /// holds a value. The KSP keyboard lock is handled by the returned TextFieldController.
+    /// Default colors/metrics: TextFieldPalette.
     /// </summary>
     public class TextFieldBuilder : IUGUIBuilder<TextFieldController>
     {
@@ -61,6 +63,20 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             return this;
         }
 
+        // Clear button at the right end of the field, shown only while the field holds a value.
+        // Single-line only (ignored on a multi-line field).
+        private bool _clearButton = false;
+        public TextFieldBuilder WithClearButtonState(bool clearButton)
+        {
+            this._clearButton = clearButton;
+            return this;
+        }
+
+        // Preferred glyph with degraded alternatives, picked at build time depending on what the
+        // font can render. "x" (U+00D7) comes first: it is baked into the game font, unlike the
+        // ballot X variants which depend on the fallback chain.
+        private static string ClearGlyph => DefaultPalette.PickGlyph("×", "✕", "✗", "x");
+
         // =======================================
         // Build
         // =======================================
@@ -82,6 +98,8 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             var input = inputGo.AddComponent<TMP_InputField>();
             input.lineType = _multiline ? TMP_InputField.LineType.MultiLineNewline : TMP_InputField.LineType.SingleLine;
 
+            bool withClear = _clearButton && !_multiline;
+
             int padH = Mathf.RoundToInt(TextFieldPalette.PaddingH);
             int padV = _multiline ? Mathf.RoundToInt(TextFieldPalette.PaddingV) : 0;
             TextAlignmentOptions align = _multiline ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Left;
@@ -92,7 +110,11 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             // then both honor the padding. The RectMask2D clips the overflowing text/placeholder.
             var viewport = NewFillingChild(inputGo.transform, "Viewport");
             viewport.offsetMin = new Vector2(padH, padV);
-            viewport.offsetMax = new Vector2(-padH, -padV);
+            // The band taken by the clear button is carved out of the viewport once and for all, even
+            // while the button is hidden: resizing it as the value comes and goes would shift the text
+            // on the first typed character, and would have TMP_InputField recompute its scroll and caret
+            // against a viewport changing size mid-typing.
+            viewport.offsetMax = new Vector2(-padH - (withClear ? TextFieldPalette.ClearWidth : 0f), -padV);
             viewport.gameObject.AddComponent<RectMask2D>();
 
             var placeholder = NewFieldText(viewport, "Placeholder", align);
@@ -111,7 +133,47 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
 
             return inputGo
                 .AddComponent<TextFieldController>()
-                .WithInputField(input);
+                .WithInputField(input)
+                .WithClearButton(withClear ? BuildClearButton(inputGo.transform, padH) : null);
+        }
+
+        /// <summary>
+        /// Builds the clear button, hidden until the controller shows it. Returns the handler through
+        /// which the controller binds the click.
+        /// </summary>
+        private PointerHandler BuildClearButton(Transform parent, int padH)
+        {
+            // Sibling of the viewport, added AFTER it: uGUI raycasts children over their parent and
+            // later siblings over earlier ones, so the handler below takes the click instead of the
+            // TMP_InputField underneath. Not a child of the viewport, whose RectMask2D would clip it.
+            var go = new GameObject("Clear", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+
+            var label = UGUILabels.AddLabel(go);
+            label.text = ClearGlyph;
+            label.fontSize = TextFieldPalette.ClearFontSize;
+            label.color = TextFieldPalette.ClearColor;
+            label.alignment = TextAlignmentOptions.Center;
+            // AddLabel opts labels out of raycasting; here the label IS the click target (its whole
+            // rect, not just the glyph), which spares us a dedicated transparent Image.
+            label.raycastTarget = true;
+
+            // Full-height band pinned to the right edge, just inside the padding — matching the space
+            // carved out of the viewport. Sized AFTER the TMP component is added, which resets
+            // sizeDelta to TMP's own default.
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1f, 0f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.sizeDelta = new Vector2(TextFieldPalette.ClearWidth, 0f);
+            rect.anchoredPosition = new Vector2(-padH, 0f);
+
+            var handler = go.AddComponent<PointerHandler>();
+            handler.OnEnter = () => label.color = TextFieldPalette.ClearHoverColor;
+            handler.OnExit = () => label.color = TextFieldPalette.ClearColor;
+
+            go.SetActive(false);
+            return handler;
         }
 
         private TextMeshProUGUI NewFieldText(Transform parent, string objectName, TextAlignmentOptions align)

@@ -7,6 +7,8 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
     /// Drives a shared text field (single- or multi-line). Fully encapsulates the KSP keyboard lock:
     /// the game keyboard is locked while the field holds the focus, and unlocked on blur (or when the
     /// field is destroyed). Exposes the value through the OnValueChanged event and the Get/SetText API.
+    /// Drives the clear button when the field was built with one: shown only while the field holds a
+    /// value, and clearing the field when clicked.
     /// </summary>
     public class TextFieldController : MonoBehaviour
     {
@@ -35,6 +37,14 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             return this;
         }
 
+        // Null when the field is built without a clear button.
+        private PointerHandler _clearButton;
+        public TextFieldController WithClearButton(PointerHandler clearButton)
+        {
+            this._clearButton = clearButton;
+            return this;
+        }
+
         public void Start()
         {
             if (_input != null)
@@ -44,6 +54,12 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
                 _input.onSelect.AddListener(OnInputSelected);
                 _input.onDeselect.AddListener(OnInputDeselected);
             }
+            if (_clearButton != null)
+            {
+                _clearButton.OnClick = Clear;
+            }
+            // The initial value is set by the builder, before any listener exists.
+            UpdateClearButton(GetText());
         }
 
         public void OnDestroy()
@@ -54,6 +70,10 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
                 _input.onEndEdit.RemoveListener(OnInputEndEdit);
                 _input.onSelect.RemoveListener(OnInputSelected);
                 _input.onDeselect.RemoveListener(OnInputDeselected);
+            }
+            if (_clearButton != null)
+            {
+                _clearButton.OnClick = null;
             }
             // Safety net: if the field is destroyed while focused, the lock would otherwise stay active
             // and freeze the game controls.
@@ -74,6 +94,9 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
 
         private void OnInputValueChanged(string value)
         {
+            // Refreshed before the guard below: a programmatic SetText does not notify the consumers,
+            // but it does change what the field holds, so the button has to follow it too.
+            UpdateClearButton(value);
             if (_suppressNotify) return;
             OnValueChanged.Fire(value);
         }
@@ -124,6 +147,39 @@ namespace com.github.lhervier.ksp.shared.ugui.textfield
             {
                 _suppressNotify = false;
             }
+        }
+
+        /// <summary>
+        /// Empties the field on the user's behalf: fires OnValueChanged (unlike SetText) and leaves
+        /// the keyboard focus on the field. Bound to the clear button when the field has one.
+        /// </summary>
+        public void Clear()
+        {
+            if (_input == null) return;
+            // Straight assignment rather than SetText: emptying the field IS a user-driven value
+            // change, and consumers have to hear about it.
+            _input.text = string.Empty;
+            Activate();
+        }
+
+        // ============================================
+        // Clear button
+        // ============================================
+
+        // Shows the clear button only while the field holds a value. No-op without a clear button.
+        private void UpdateClearButton(string value)
+        {
+            if (_clearButton == null) return;
+            bool visible = !string.IsNullOrEmpty(value);
+            if (_clearButton.gameObject.activeSelf == visible) return;
+
+            // Hiding the button under the pointer (which is what a click on it does) means uGUI never
+            // sends it the matching exit: without this, it would come back tinted as if hovered.
+            if (!visible && _clearButton.OnExit != null)
+            {
+                _clearButton.OnExit();
+            }
+            _clearButton.gameObject.SetActive(visible);
         }
     }
 }

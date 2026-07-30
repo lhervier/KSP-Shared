@@ -20,9 +20,16 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
 
         public const int BorderThickness = 1;
 
+        // Clear ("x") button of a single-line field: width of the band reserved at the right end of
+        // the field, and size of the glyph drawn (centered) inside it.
+        public const float ClearWidth = 16f;
+        public const int ClearFontSize = 14;
+
         public static readonly Color BgColor = Rgb(13, 13, 13);          // #0d0d0d
         public static readonly Color BorderColor = Rgb(42, 42, 42);      // #2a2a2a
         public static readonly Color TextColor = Rgb(232, 232, 232);     // #e8e8e8
         public static readonly Color PlaceholderColor = Rgb(85, 85, 85); // #555
+        public static readonly Color ClearColor = Rgb(119, 119, 119);    // #777
+        public static readonly Color ClearHoverColor = Rgb(232, 232, 232);
     }
 }
