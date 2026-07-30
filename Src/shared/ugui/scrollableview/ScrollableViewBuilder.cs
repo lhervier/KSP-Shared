@@ -31,6 +31,19 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
             return this;
         }
 
+        private float _initialScrollOffset = 0f;
+        /// <summary>
+        /// Where the view starts, in pixels from the top of the content. Feed back a value memorized
+        /// from the controller's OnScrollOffsetChanged to have the view reopen where it was left, even
+        /// after having been destroyed and rebuilt (scene change). Left unset, the view opens at the top.
+        /// </summary>
+        /// <param name="scrollOffset">The offset to open at, in pixels</param>
+        public ScrollableViewBuilder<C> WithInitialScrollOffset(float scrollOffset)
+        {
+            this._initialScrollOffset = scrollOffset;
+            return this;
+        }
+
         private float _scrollbarWidth = ScrollableViewPalette.ScrollbarWidth;
         public ScrollableViewBuilder<C> WithScrollbarWidth(float width)
         {
@@ -215,6 +228,7 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
             return rootGo
                 .AddComponent<ScrollableViewController>()
                 .WithScrollRect(scrollRect)
+                .WithInitialScrollOffset(_initialScrollOffset)
                 .WithContentController(contentController);
         }
     }
