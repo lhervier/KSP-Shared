@@ -29,6 +29,7 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
         private static readonly List<SpriteDef> _spriteDefs = new List<SpriteDef>
         {
             new SpriteDef { Name = "refresh", TexturePath = DefaultPalette.RefreshIconPath, Unicode = 0x21BB, Scale = 1f }, // ↻
+            new SpriteDef { Name = "paw", TexturePath = DefaultPalette.PawIconPath, Unicode = 0x2699, Scale = 1f },       // ⚙
         };
 
         /// <summary>
@@ -138,6 +139,17 @@ namespace com.github.lhervier.ksp.shared.ugui.sprites
                 true,
                 out spriteIndex
             ) != null;
+        }
+
+        /// <summary>
+        /// The label text rendering the given registered sprite, tinted with the label color, or
+        /// the first of the given text glyphs the fonts can render when that sprite is unavailable.
+        /// </summary>
+        public static string SpriteOrGlyph(string spriteName, params string[] glyphs)
+        {
+            return HasSprite(spriteName)
+                ? "<sprite name=\"" + spriteName + "\" tint=1>"
+                : DefaultPalette.PickGlyph(glyphs);
         }
 
         /// <summary>

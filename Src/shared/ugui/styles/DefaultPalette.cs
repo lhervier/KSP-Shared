@@ -109,6 +109,9 @@ namespace com.github.lhervier.ksp.shared.ugui.styles
         // Circular refresh arrow, used wherever the "↻" glyph would be (missing from the game fonts).
         public static string RefreshIconPath = Constants.ModName + "/Textures/refresh_icon";
 
+        // Gear, used wherever the "⚙" glyph would be: the "show the part action window" action.
+        public static string PawIconPath = Constants.ModName + "/Textures/paw_icon";
+
         // ==============================================================
         // Default values
         // ==============================================================

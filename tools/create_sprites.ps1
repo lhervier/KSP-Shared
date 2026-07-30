@@ -35,6 +35,7 @@ $work = 256
 # filename -> glyph to render
 $icons = [ordered]@{
     'refresh_icon.png' = [char]0x21BB  # clockwise open circle arrow -> "Refresh"
+    'paw_icon.png'     = [char]0x2699  # gear                        -> "Show the part action window"
 }
 
 # Resolve the Textures directory relative to this script, independent of the CWD.
