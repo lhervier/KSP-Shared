@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,6 +58,11 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
         /// </summary>
         private float _lastMaxOffset = float.NaN;
 
+        /// <summary>
+        /// Content position the culling was last re-evaluated for. NaN until the first frame does it.
+        /// </summary>
+        private float _lastCulledPosition = float.NaN;
+
         public void LateUpdate()
         {
             RectTransform content = _scrollRect == null ? null : _scrollRect.content;
@@ -73,7 +79,6 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
             {
                 _lastMaxOffset = maxOffset;
                 ApplyOffset();
-                return;
             }
 
             // Settled view: the position can only have moved because the user scrolled, so it becomes the
@@ -81,11 +86,17 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
             // position at the end of its travel: that is the clamp talking, not the user. Keeping the
             // wanted offset there is what lets a filtered-down (or not yet laid out) list scroll back to
             // where it was once it grows again.
-            if (content.anchoredPosition.y >= maxOffset && _offset > maxOffset)
+            else if (content.anchoredPosition.y < maxOffset || _offset <= maxOffset)
             {
-                return;
+                Memorize(content.anchoredPosition.y);
             }
-            Memorize(content.anchoredPosition.y);
+
+            // The position is final for this frame: the culling can be brought in line with it.
+            if (content.anchoredPosition.y != _lastCulledPosition)
+            {
+                _lastCulledPosition = content.anchoredPosition.y;
+                RecullContent();
+            }
         }
 
         // ================================
@@ -150,6 +161,43 @@ namespace com.github.lhervier.ksp.shared.ugui.scrollableview
             content.anchoredPosition = new Vector2(content.anchoredPosition.x, position);
             // Leftover inertia from a fling would drag the view away from the position we just set.
             _scrollRect.StopMovement();
+        }
+
+        // Refilled in place on every pass instead of being rebuilt: the content's graphics come and go
+        // (rows are destroyed and recreated), so the list cannot be cached, but its capacity can.
+        private readonly List<MaskableGraphic> _clippedGraphics = new List<MaskableGraphic>();
+
+        /// <summary>
+        /// Re-evaluate which of the scrolled graphics the viewport hides, and hence which ones are worth
+        /// drawing. Idempotent, and consistent with what the viewport's mask computes on its own.
+        /// </summary>
+        private void RecullContent()
+        {
+            // KSP ships a UnityEngine.UI where RectMask2D.PerformClipping, as long as the mask's own rect
+            // has not moved (always the case here: only the content scrolls), re-evaluates the culling of
+            // a graphic ONLY when its CanvasRenderer reports hasMoved. A content position that something
+            // other than the mask's own bookkeeping brought about can therefore leave graphics flagged as
+            // culled — drawn nowhere, and ignored by the GraphicRaycaster — until a later move happens to
+            // unstick them. Unity dropped that condition afterwards (case 1170399); this does the same by
+            // hand, on the same rect the mask would have used.
+            RectMask2D mask = _scrollRect == null || _scrollRect.viewport == null
+                ? null
+                : _scrollRect.viewport.GetComponent<RectMask2D>();
+            if (mask == null || _scrollRect.content == null)
+            {
+                return;
+            }
+            Rect clipRect = mask.canvasRect;
+            if (clipRect.width <= 0f || clipRect.height <= 0f)
+            {
+                // No usable clip rect (canvas not resolved yet): culling everything would blank the view.
+                return;
+            }
+            _scrollRect.content.GetComponentsInChildren(false, _clippedGraphics);
+            for (int i = 0; i < _clippedGraphics.Count; i++)
+            {
+                _clippedGraphics[i].Cull(clipRect, true);
+            }
         }
 
         /// <summary>How far the content can be scrolled down, in pixels (0 when it does not overflow).</summary>
