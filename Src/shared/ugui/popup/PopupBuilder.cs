@@ -39,6 +39,9 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             return this;
         }
 
+        // Optional: what the window puts in the title bar, between the title and the close button.
+        // Leave it unset (and pass MonoBehaviour for T) when the window has nothing to show there —
+        // the close button then sits alone against the right edge.
         private IUGUIBuilder<T> _titleBarBuilder;
         public PopupBuilder<T, C, O> WithTitleBarBuilder(IUGUIBuilder<T> titleBarBuilder)
         {
@@ -488,8 +491,13 @@ namespace com.github.lhervier.ksp.shared.ugui.popup
             rightRowLayout.childForceExpandWidth = false;
             rightRowLayout.childForceExpandHeight = false;
 
-            var actionGroupLabelController = this._titleBarBuilder.Build();
-            actionGroupLabelController.transform.SetParent(rightRowGo.transform, false);
+            // Optional: a window with nothing to say up there keeps just the close button. The layout
+            // sizes itself to its children, so an absent one costs no gap.
+            if( this._titleBarBuilder != null )
+            {
+                var titleBarController = this._titleBarBuilder.Build();
+                titleBarController.transform.SetParent(rightRowGo.transform, false);
+            }
 
             closeButtonController = new ButtonBuilder()
                 .WithObjectName("Popup.TitleBar.RightColumn.CloseButton")
