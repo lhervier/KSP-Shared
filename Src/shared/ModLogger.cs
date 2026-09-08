@@ -24,6 +24,21 @@ namespace com.github.lhervier.ksp.shared
         {
             _logLevel = logLevel;
         }
+
+        /// <summary>
+        /// Whether a message logged at <paramref name="level"/> would be written.
+        ///
+        /// Meant to be tested before building the message itself: Log() checks the level too, but only
+        /// once it has been called, that is to say once the interpolated string has been built. On a code
+        /// path that runs at every frame, that string is the whole cost of a log that goes nowhere.
+        /// </summary>
+        public bool IsEnabled(LogLevel level) => level <= _logLevel;
+
+        public bool IsErrorEnabled => IsEnabled(LogLevel.Error);
+        public bool IsWarningEnabled => IsEnabled(LogLevel.Warning);
+        public bool IsInfoEnabled => IsEnabled(LogLevel.Info);
+        public bool IsDebugEnabled => IsEnabled(LogLevel.Debug);
+        public bool IsTraceEnabled => IsEnabled(LogLevel.Trace);
         
         public ModLogger() 
         {
@@ -37,7 +52,7 @@ namespace com.github.lhervier.ksp.shared
 
         public void Log(string message, LogLevel level) 
         {
-            if (level <= _logLevel)
+            if (IsEnabled(level))
             {
                 string levelPrefix;
                 switch (level)
